@@ -16,7 +16,7 @@ public class SliderActions : MonoBehaviour
     }
 
     [SerializeField]
-    HandleType handleType;
+    HandleType handleType = HandleType.alpha1;
 
     Slider slider;
     Text text;
