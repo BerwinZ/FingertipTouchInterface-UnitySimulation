@@ -6,11 +6,11 @@ public class JointParaInput : MonoBehaviour
 {
     [Header("Index Finger")]
     [Range(-20, 20)]
-    public float gama1 = 0;
+    public float gamma1 = 0;
     [Range(-20, 20)]
-    public float gama2 = 0;
+    public float gamma2 = 0;
     [Range(-20, 20)]
-    public float gama3 = 0;
+    public float gamma3 = 0;
 
     [Header("Thumb")]
     [Range(-20, 20)]
@@ -58,7 +58,7 @@ public class JointParaInput : MonoBehaviour
     /// </summary>
     void SetJointsPara()
     {
-        float[] gama = new float[3] { gama1, gama2, gama3 };
+        float[] gama = new float[3] { gamma1, gamma2, gamma3 };
 
         for (int index = 0; index < 3; index++)
         {
