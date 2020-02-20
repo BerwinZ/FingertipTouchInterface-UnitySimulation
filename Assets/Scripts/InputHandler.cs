@@ -19,11 +19,11 @@ public class InputHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             SaveImage();
         }
-        else if(Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Escape))
         {
             ExitApplication();
         }
@@ -34,7 +34,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     void SaveImage()
     {
-        if(cameraToShot != null)
+        if (cameraToShot != null)
         {
             Texture2D screenShot = CaptureScreen(cameraToShot, sameSizeWithWindow);
             // debugText.text = Screen.width.ToString() + " " + Screen.height.ToString();
@@ -82,14 +82,14 @@ public class InputHandler : MonoBehaviour
         RenderTexture.active = rt;
 
         // Create a texture 2D to store the image
-        int imageWidth = isFullSize? Screen.width : (int)(Screen.width * cam.rect.width);
-        int imageHeight = isFullSize? Screen.height : (int)(Screen.height * cam.rect.height);
+        int imageWidth = isFullSize ? Screen.width : (int)(Screen.width * cam.rect.width);
+        int imageHeight = isFullSize ? Screen.height : (int)(Screen.height * cam.rect.height);
         Texture2D screenShot = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
 
         // Read pixels from rendering texture (rather than the screen) to texture 2D
         // Note. the source coordinate is the image coordinate ((0,0) is in top-right) rather than the pixel coordinate ((0,0) is in the bottom-left)
-        int imagePosX = isFullSize? 0: (int)(Screen.width * cam.rect.x);
-        int imagePosY = isFullSize? 0: (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
+        int imagePosX = isFullSize ? 0 : (int)(Screen.width * cam.rect.x);
+        int imagePosY = isFullSize ? 0 : (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
         Rect rect = new Rect(imagePosX, imagePosY, imageWidth, imageHeight);
         screenShot.ReadPixels(rect, 0, 0);
         screenShot.Apply();

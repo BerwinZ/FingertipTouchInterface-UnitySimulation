@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JointParaInput : MonoBehaviour
+/// <summary>
+/// This class control the values of 6 DOF of the thumb and index finger joints.
+/// </summary>
+public class JointManager : MonoBehaviour
 {
     [Header("Index Finger")]
     [Range(-20, 20)]
