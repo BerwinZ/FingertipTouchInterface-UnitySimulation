@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Get flags from JointManger
+/// </summary>
 public class ToggleActions : MonoBehaviour
 {
     public enum FlagType
@@ -23,7 +26,14 @@ public class ToggleActions : MonoBehaviour
     void Start()
     {
         toggle = transform.GetComponent<Toggle>();
-        thumb = GameObject.Find("thumb_tip").GetComponent<TouchDetection>();
+        TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
+        foreach(var finger in fingeres)
+        {
+            if(finger.fingertipType == JointType.Finger.thumb)
+            {
+                thumb = finger;
+            }
+        }
     }
 
     // Update is called once per frame

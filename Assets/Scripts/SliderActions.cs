@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Send slider data to the JointManager.
+/// </summary>
 public class SliderActions : MonoBehaviour
 {
 

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Static class to store some enum para
+/// </summary>
 public class JointType
 {
     public enum DOF

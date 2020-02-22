@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Test class for the collider 2D calculation
+/// </summary>
 public class TouchPointCalc : MonoBehaviour
 {
     // Start is called before the first frame update

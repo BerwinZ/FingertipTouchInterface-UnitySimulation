@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Detect the touch action, including the following parameters
+/// 1. If touched
+/// 2. If two fingers are overlapped
+/// 3. The 2-d touch position of the thumb related to the index finger
+/// </summary>
 public class TouchDetection : MonoBehaviour
 {
     // The type of this finger
@@ -67,6 +73,7 @@ public class TouchDetection : MonoBehaviour
 
         isTouching = entry;
 
+        // Calculate the 2d position
         if(isTouching && fingertipType == JointType.Finger.thumb)
         {
             // Set the index finger plan to be the parent of tip special
@@ -80,7 +87,7 @@ public class TouchDetection : MonoBehaviour
             // Set the parent back
             tipSpecial.parent = transform.parent;
         }
-        else
+        else if(!isTouching)
         {
             isOverlapped = false;
         }

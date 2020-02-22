@@ -5,15 +5,21 @@ using UnityEditor;
 using UnityEngine.UI;
 using System.IO;
 
+/// <summary>
+/// Handle the user's input, including
+/// 1. Save single image
+/// 2. Exit the application
+/// </summary>
 public class InputHandler : MonoBehaviour
 {
     public Camera cameraToShot = null;
     public bool sameSizeWithWindow = false;
-    public Text debugText = null;
+    Text debugText;
 
     // Start is called before the first frame update
     void Start()
     {
+        debugText = GameObject.Find("DebugText").GetComponent<Text>();
     }
 
     // Update is called once per frame
