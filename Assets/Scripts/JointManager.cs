@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// This class control the values of 6 DOF of the thumb and index finger joints.
 /// </summary>
-public class JointManager : MonoBehaviour
+public class JointManager : Singleton<JointManager>
 {
     [Header("Index Finger")]
     [Range(-20, 20)]

@@ -11,14 +11,12 @@ public class SliderActions : MonoBehaviour
 
     Slider slider;
     Text text;
-    JointManager jointControl;
 
     // Start is called before the first frame update
     void Start()
     {
         slider = transform.GetComponent<Slider>();
         text = transform.Find("Number").GetComponent<Text>();
-        jointControl = GameObject.Find("Hand Model").GetComponent<JointManager>();
     }
 
     // Update is called once per frame
@@ -31,22 +29,22 @@ public class SliderActions : MonoBehaviour
         switch (handleType)
         {
             case JointType.DOF.alpha1:
-                jointControl.alpha1 = slider.value;
+                JointManager.Instance.alpha1 = slider.value;
                 break;
             case JointType.DOF.alpha2:
-                jointControl.alpha2 = slider.value;
+                JointManager.Instance.alpha2 = slider.value;
                 break;
             case JointType.DOF.beta:
-                jointControl.beta = slider.value;
+                JointManager.Instance.beta = slider.value;
                 break;
             case JointType.DOF.gamma1:
-                jointControl.gamma1 = slider.value;
+                JointManager.Instance.gamma1 = slider.value;
                 break;
             case JointType.DOF.gamma2:
-                jointControl.gamma2 = slider.value;
+                JointManager.Instance.gamma2 = slider.value;
                 break;
             case JointType.DOF.gamma3:
-                jointControl.gamma3 = slider.value;
+                JointManager.Instance.gamma3 = slider.value;
                 break;
             default:
                 break;
