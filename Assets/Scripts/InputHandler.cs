@@ -10,16 +10,18 @@ using System.IO;
 /// 1. Save single image
 /// 2. Exit the application
 /// </summary>
-public class InputHandler : MonoBehaviour
+public class InputHandler : Singleton<InputHandler>
 {
     public Camera cameraToShot = null;
     public bool sameSizeWithWindow = false;
     Text debugText;
+    public string foldername { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
         debugText = GameObject.Find("DebugText").GetComponent<Text>();
+        foldername = Application.dataPath + "/Screenshots";
     }
 
     // Update is called once per frame
@@ -40,26 +42,27 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     void SaveImage()
     {
-        if (cameraToShot != null)
+        // Actions in disk
+        string filename = foldername + "/ScreenShot.png";
+
+        // Check whether the folder exists
+        if (!Directory.Exists(foldername))
         {
-            Texture2D screenShot = CaptureScreen(cameraToShot, sameSizeWithWindow);
-            // debugText.text = Screen.width.ToString() + " " + Screen.height.ToString();
-
-            // Save to the file
-            byte[] bytes = screenShot.EncodeToPNG();
-            string foldername = Application.dataPath + "/Screenshots";
-            string filename = foldername + "/ScreenShot.png";
-
-            // Check whether the folder exists
-            if (!Directory.Exists(foldername))
-            {
-                Directory.CreateDirectory(foldername);
-            }
-
-            System.IO.File.WriteAllBytes(filename, bytes);
-            // Debug.Log("Saved in " + filename);
-            // debugText.text = "Saved in " + filename;
+            Directory.CreateDirectory(foldername);
         }
+
+
+        System.IO.File.WriteAllBytes(filename,
+                                     CaptureScreen(cameraToShot, sameSizeWithWindow));
+
+        // Debug.Log("Saved in " + filename);
+        // debugText.text = "Saved in " + filename;
+
+    }
+
+    public void ChangeFolderPath()
+    {
+
     }
 
     /// <summary>
@@ -67,7 +70,7 @@ public class InputHandler : MonoBehaviour
     /// </summary>
     /// <param name="cam"></param>
     /// <returns></returns>
-    Texture2D CaptureScreen(Camera cam, bool isFullSize)
+    byte[] CaptureScreen(Camera cam, bool isFullSize)
     {
         // Create a rendering texture
         RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0);
@@ -105,7 +108,7 @@ public class InputHandler : MonoBehaviour
         RenderTexture.active = null;
         Destroy(rt);
 
-        return screenShot;
+        return screenShot.EncodeToPNG();
     }
 
     void ExitApplication()
