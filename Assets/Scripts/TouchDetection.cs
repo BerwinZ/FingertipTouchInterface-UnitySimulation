@@ -14,7 +14,7 @@ public class TouchDetection : MonoBehaviour
     public JointType.Finger fingertipType = JointType.Finger.thumb;
 
     // Type of the finger that is isTouching with
-    JointType.Finger detectedFingerType;
+    JointType.Finger targetFingerType;
 
     // Whether this finger is isTouching by another
     public bool isTouching { get; private set; }
@@ -22,25 +22,28 @@ public class TouchDetection : MonoBehaviour
     // Whether this finger is overlapped too much
     public bool isOverlapped { get; private set; }
 
-    // For thumb, the tip special is the touch point
-    // For index finger, it is the plane coordinate
-    public Transform tipSpecial { get; private set; }
+    Collider m_Collider;
+
+    // The touch point
+    public Transform touchPoint { get; private set; }
+
 
     // For thumb, the touch position is the X-Y position relative to the index finger coordinate. 
-    // For index finger, it keeps (0, 0)
+    // For index finger, the touch position is the X-Y position relative to the thumb coordinate. 
     public Vector2 touchPosition { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
-        detectedFingerType = (JointType.Finger)(((int)fingertipType + 1) % 2);
+        targetFingerType = (JointType.Finger)(((int)fingertipType + 1) % 2);
 
         isTouching = false;
         isOverlapped = false;
 
-        tipSpecial = transform.parent.GetChild(1);
+        m_Collider = GetComponent<Collider>();
 
-        touchPosition = new Vector2(0, 0);
+        touchPoint = transform.GetChild(0);
+        touchPosition = Vector2.zero;
 
         // Test Collider Code
         // if (fingertipType == JointType.Finger.thumb)
@@ -53,7 +56,7 @@ public class TouchDetection : MonoBehaviour
     void Update()
     {
         // Debug.Log(fingertipType.ToString() + " isTouching: " + isTouching);
-        
+
         // Test Collider Code
         // if (fingertipType == JointType.Finger.thumb)
         // {
@@ -76,32 +79,75 @@ public class TouchDetection : MonoBehaviour
         DetectTouching(other, false);
     }
 
-    Vector2 posTmp = new Vector2(0, 0);
-    void DetectTouching(Collider other, bool entry)
+    TouchDetection otherFinger;
+    Ray ray = new Ray();
+    RaycastHit hit;
+    float radius;
+    float wholeHeight;
+    float cylinHeight;
+    Vector3 localVector;
+    Vector3 worldVector;
+    Vector3 worldProj; 
+    float cylinderAngle;
+    Vector2 tmpTouch = Vector2.zero;
+    void DetectTouching(Collider other, bool isEntry)
     {
-        TouchDetection otherScript = other.transform.GetComponent<TouchDetection>();
-        if (otherScript == null || otherScript.fingertipType != detectedFingerType)
+        otherFinger = other.transform.GetComponent<TouchDetection>();
+        if (otherFinger == null || otherFinger.fingertipType != targetFingerType)
             return;
 
-        isTouching = entry;
+        isTouching = isEntry;
 
-        // Calculate the 2d position
-        if (isTouching && fingertipType == JointType.Finger.thumb)
+        // Calculate the position of touch point
+        if (isTouching)
         {
-            // Set the index finger plan to be the parent of tip special
-            tipSpecial.parent = otherScript.tipSpecial;
+            // Link the two center of the collider
+            ray.origin = other.bounds.center;
+            ray.direction = m_Collider.bounds.center - other.bounds.center;
 
-            posTmp.x = -tipSpecial.localPosition.x;
-            posTmp.y = tipSpecial.localPosition.y;
-            touchPosition = posTmp;
-            isOverlapped = tipSpecial.localPosition.z < 0;
+            // Touch point is the intersection between ray and the collider
+            m_Collider.Raycast(ray, out hit, 100.0f);
+            touchPoint.position = hit.point;
 
-            // Set the parent back
-            tipSpecial.parent = transform.parent;
+            // If the distance between two touch point is too large
+            isOverlapped = Vector3.Distance(touchPoint.position, otherFinger.touchPoint.position) > 0.002f;
+
+            // Get the coordinate
+            // X axis faces up
+            // Y axis faces right, the direction of axle
+            // Z axis faces outside
+            radius = ((CapsuleCollider)other).radius;
+            wholeHeight = ((CapsuleCollider)other).height;
+            cylinHeight = wholeHeight - 2 * radius;
+            localVector = otherFinger.touchPoint.localPosition;
+            worldVector = other.transform.TransformVector(localVector);
+
+// TODO: Solve the coordinate
+            if (localVector.y > cylinHeight / 2)   // In the top sphere part
+            {
+                Debug.Log("Top Sphere");
+            }
+            else if (localVector.y < -cylinHeight / 2)  // In the bottom sphere part
+            {
+                Debug.Log("Bottom Sphere");
+            }
+            else    // In the cylinder part
+            {
+                worldProj = Vector3.ProjectOnPlane(worldVector, other.transform.up);
+
+                cylinderAngle = (localVector.x > 0) ? 1 : -1;
+                cylinderAngle *= Vector3.Angle(other.transform.forward, worldProj);
+
+                tmpTouch.y = cylinderAngle * Mathf.PI * radius / 180.0f;
+                tmpTouch.x = localVector.y;
+            }
+            touchPosition = tmpTouch;
+
         }
         else if (!isTouching)
         {
             isOverlapped = false;
+            touchPosition = Vector2.zero;
         }
     }
 
@@ -160,7 +206,7 @@ public class TouchDetection : MonoBehaviour
 
             objOnCollider = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             objOnCollider.transform.localScale = Vector3.one * 0.001f;
-            
+
             objOnBound = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             objOnBound.transform.localScale = Vector3.one * 0.001f;
             objOnBound.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 0.0f, 0.0f);
@@ -182,5 +228,5 @@ public class TouchDetection : MonoBehaviour
             objBoundRay.transform.position = hit.point;
         }
     }
-#endregion TestColliderFunctions
+    #endregion TestColliderFunctions
 }
