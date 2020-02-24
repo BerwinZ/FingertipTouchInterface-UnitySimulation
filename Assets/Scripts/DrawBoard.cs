@@ -8,16 +8,20 @@ using UnityEngine.UI;
 /// </summary>
 public class DrawBoard : Singleton<DrawBoard>
 {
+    public float movScaler = 5.0f;
     RectTransform point;
-    Text posIndicator;
+    Text indicatorThumb;
+    Text indicatorIndex;
     TouchDetection thumb;
-    float scaler;
+    TouchDetection index;
 
     // Start is called before the first frame update
     void Start()
     {
         point = transform.GetChild(1).GetComponent<RectTransform>();
-        posIndicator = transform.GetChild(2).GetComponent<Text>();
+        indicatorThumb = transform.GetChild(2).GetComponent<Text>();
+        indicatorIndex = transform.GetChild(3).GetComponent<Text>();
+
         TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
         foreach(var finger in fingeres)
         {
@@ -25,15 +29,22 @@ public class DrawBoard : Singleton<DrawBoard>
             {
                 thumb = finger;
             }
+            else if(finger.fingertipType == JointType.Finger.index)
+            {
+                index = finger;
+            }
         }
-        scaler = 5.0f;
     }
 
+    Vector3 pointPos = Vector3.zero;
     // Update is called once per frame
     void Update()
     {
-        point.localPosition = new Vector3(thumb.touchPosition.x * scaler, thumb.touchPosition.y * scaler, 0);
+        pointPos.x = thumb.touchPosition.x * movScaler;
+        pointPos.y = thumb.touchPosition.y * movScaler;
+        point.localPosition = pointPos;
 
-        posIndicator.text = thumb.touchPosition.ToString();
+        indicatorThumb.text = "T(mm): " + thumb.touchPosition;
+        indicatorIndex.text = "I(mm): " + index.touchPosition;
     }
 }
