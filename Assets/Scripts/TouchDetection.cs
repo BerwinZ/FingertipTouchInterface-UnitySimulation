@@ -109,12 +109,6 @@ public class TouchDetection : MonoBehaviour
     // The vector of (localVector - sphere point)
     Vector3 sphereVector;
 
-    // The position of touch point in world coordinate
-    Vector3 worldVector;
-
-    // The projection of worldVector in the collider obj's x-z plane (in world coordinate)
-    Vector3 worldProj;
-
     // The angle between localProj and the collider obj's z axis (still in collider obj's coordinate)
     float verticalAngle;
 
@@ -179,7 +173,6 @@ public class TouchDetection : MonoBehaviour
         wholeHeight = ((CapsuleCollider)other).height;
         cylinderHeight = wholeHeight - 2 * radius;
         localVector = otherFinger.touchPoint.localPosition;
-        worldVector = other.transform.TransformVector(localVector);
 
         if (localVector.y > -cylinderHeight / 2 &&
             localVector.y < cylinderHeight / 2)     // In the cylinder part

@@ -62,7 +62,13 @@ public class InputHandler : Singleton<InputHandler>
 
     public void ChangeFolderPath()
     {
+        System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+        System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 
+        if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+        {
+            Debug.Log(dialog.SelectedPath);
+        }
     }
 
     /// <summary>
