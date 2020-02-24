@@ -149,12 +149,14 @@ public class TouchDetection : MonoBehaviour
             isOverlapped = Vector3.Distance(touchPoint.position, otherFinger.touchPoint.position) > 0.002f;
 
             // Calculate the touch point
-            touchPosition = CalcTouchPosition(other);
+            if (!isOverlapped)
+            {
+                touchPosition = CalcTouchPosition(other);
+            }
         }
         else if (!isTouching)
         {
             isOverlapped = false;
-            // touchPosition = Vector2.zero;
         }
     }
 
@@ -190,14 +192,14 @@ public class TouchDetection : MonoBehaviour
         else
         {
             // Use sphere vector here
-            sphereVector = (localVector.y > 0)? 
-                            localVector - new Vector3(0,  cylinderHeight / 2, 0):
+            sphereVector = (localVector.y > 0) ?
+                            localVector - new Vector3(0, cylinderHeight / 2, 0) :
                             localVector - new Vector3(0, -cylinderHeight / 2, 0);
 
             // Project sphere vector to the y-z plane 
             localProj = Vector3.ProjectOnPlane(sphereVector, Vector3.right);
             horizontalAngle = Vector3.Angle(Vector3.forward, localProj);
-            localTouchM.x = (localVector.y > 0) ? 1: -1;
+            localTouchM.x = (localVector.y > 0) ? 1 : -1;
             localTouchM.x *= horizontalAngle * Mathf.PI * radius / 180.0f + cylinderHeight / 2;
 
             // Project sphere vector to the x-z plane 

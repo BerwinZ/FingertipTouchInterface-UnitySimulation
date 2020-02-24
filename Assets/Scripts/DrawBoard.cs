@@ -8,6 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class DrawBoard : Singleton<DrawBoard>
 {
+    [Range(5, 30)]
     public float movScaler = 5.0f;
     RectTransform point;
     Text indicatorThumb;
@@ -45,6 +46,6 @@ public class DrawBoard : Singleton<DrawBoard>
         point.localPosition = pointPos;
 
         indicatorThumb.text = "T(mm): " + thumb.touchPosition;
-        indicatorIndex.text = "I(mm): " + index.touchPosition;
+        indicatorIndex.text = " I(mm): " + index.touchPosition;
     }
 }
