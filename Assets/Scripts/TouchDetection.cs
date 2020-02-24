@@ -26,6 +26,7 @@ public class TouchDetection : MonoBehaviour
 
     // The touch point
     public Transform touchPoint { get; private set; }
+    MeshRenderer touchPointMesh;
 
 
     // For thumb, the touch position is the X-Y position relative to the index finger coordinate. 
@@ -44,6 +45,7 @@ public class TouchDetection : MonoBehaviour
 
         touchPoint = transform.GetChild(0);
         touchPosition = Vector2.zero;
+        touchPointMesh = touchPoint.GetComponent<MeshRenderer>();
 
         // Test Collider Code
         // if (fingertipType == JointType.Finger.thumb)
@@ -133,6 +135,7 @@ public class TouchDetection : MonoBehaviour
             return;
 
         isTouching = isEntry;
+        touchPointMesh.enabled = isEntry;
 
         // Calculate the position of touch point
         if (isTouching)
@@ -146,7 +149,7 @@ public class TouchDetection : MonoBehaviour
             touchPoint.position = hit.point;
 
             // Set overlapped true if the distance between two touch point is too large
-            isOverlapped = Vector3.Distance(touchPoint.position, otherFinger.touchPoint.position) > 0.002f;
+            isOverlapped = Vector3.Distance(touchPoint.position, otherFinger.touchPoint.position) > 1e-3;
 
             // Calculate the touch point
             if (!isOverlapped)
