@@ -39,6 +39,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         {
             ExitApplication();
         }
+        
     }
 
     /// <summary>
@@ -64,6 +65,37 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
 
     }
 
+    /// <summary>
+    /// Save a single file
+    /// </summary>
+    public void SaveSingleImage()
+    {
+        // Check whether the folder exists
+        if (!Directory.Exists(foldername))
+        {
+            Directory.CreateDirectory(foldername);
+        }
+
+        // Select a file name
+        string filename = foldername + '/' + GenerateFileName() + ".png";
+
+        System.IO.File.WriteAllBytes(
+            filename, CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+    }
+
+    string GenerateFileName()
+    {
+        string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
+        filename = filename.Replace('/', '_');
+        filename = filename.Replace(' ', '_');
+        filename = filename.Replace(':', '_');
+        filename = filename.Replace('.', '_');
+        return filename;
+    }
+
+    /// <summary>
+    /// Change the folder to store images
+    /// </summary>
     public void ChangeFolderPath()
     {
         DirDialog dialog = new DirDialog();
@@ -85,12 +117,13 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             if (fullDirPath != "")
             {
                 foldername = fullDirPath;
+                FolderIndicatorActions.Instance.UpdateText(foldername);
             }
         }
     }
 
     /// <summary>
-    /// Capture the screen of the view of given camera
+    /// Capture the screen of the view of given camera and return the bytes
     /// </summary>
     /// <param name="cam"></param>
     /// <returns></returns>
@@ -135,6 +168,9 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         return screenShot.EncodeToPNG();
     }
 
+    /// <summary>
+    /// Exit the application
+    /// </summary>
     void ExitApplication()
     {
 #if UNITY_EDITOR

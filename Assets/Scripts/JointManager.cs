@@ -8,20 +8,20 @@ using UnityEngine;
 public class JointManager : Singleton<JointManager>
 {
     [Header("Index Finger")]
-    [Range(-20, 20)]
-    public float gamma1 = 0;
-    [Range(-20, 20)]
-    public float gamma2 = 0;
-    [Range(-20, 20)]
-    public float gamma3 = 0;
+    [SerializeField, Range(-20, 20)]
+    float gamma1 = 0;
+    [SerializeField, Range(-20, 20)]
+    float gamma2 = 0;
+    [SerializeField, Range(-20, 20)]
+    float gamma3 = 0;
 
     [Header("Thumb")]
-    [Range(-20, 20)]
-    public float alpha1 = 0;
-    [Range(-20, 20)]
-    public float alpha2 = 0;
-    [Range(-20, 20)]
-    public float beta = 0;
+    [SerializeField, Range(-20, 20)]
+    float alpha1 = 0;
+    [SerializeField, Range(-20, 20)]
+    float alpha2 = 0;
+    [SerializeField, Range(-20, 20)]
+    float beta = 0;
 
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;
@@ -50,11 +50,34 @@ public class JointManager : Singleton<JointManager>
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateParaValue(JointType.DOF joint, float value)
     {
+        switch (joint)
+        {
+            case JointType.DOF.alpha1:
+                alpha1 = value;
+                break;
+            case JointType.DOF.alpha2:
+                alpha2 = value;
+                break;
+            case JointType.DOF.beta:
+                beta = value;
+                break;
+            case JointType.DOF.gamma1:
+                gamma1 = value;
+                break;
+            case JointType.DOF.gamma2:
+                gamma2 = value;
+                break;
+            case JointType.DOF.gamma3:
+                gamma3 = value;
+                break;
+            default:
+                break;
+        }
         SetJointsPara();
     }
+
 
     /// <summary>
     /// Set the parameters for the joint

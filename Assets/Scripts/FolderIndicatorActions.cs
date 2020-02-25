@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FolderIndicatorActions : MonoBehaviour
+public class FolderIndicatorActions : Singleton<FolderIndicatorActions>
 {
     Text folderIndicator;
 
@@ -11,11 +11,11 @@ public class FolderIndicatorActions : MonoBehaviour
     void Start()
     {
         folderIndicator = transform.GetComponent<Text>();
+        UpdateText(ScreenShotManager.Instance.foldername);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateText(string foldername)
     {
-        folderIndicator.text = ScreenShotManager.Instance.foldername;   
+        folderIndicator.text = foldername;
     }
 }
