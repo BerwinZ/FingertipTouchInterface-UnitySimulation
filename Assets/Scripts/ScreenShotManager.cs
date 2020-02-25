@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.IO;
 using Common;
 using System;
+using System.Runtime.Serialization.Formatters.Binary;
 
 /// <summary>
 /// Handle the user's input, including
@@ -39,7 +40,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         {
             ExitApplication();
         }
-        
+
     }
 
     /// <summary>
@@ -76,20 +77,58 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             Directory.CreateDirectory(foldername);
         }
 
-        // Select a file name
-        string filename = foldername + '/' + GenerateFileName() + ".png";
+        // Get a file name
+        string imgName = GenerateImgName();
 
+        // Save the image into disk
         System.IO.File.WriteAllBytes(
-            filename, CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+                foldername + '/' + imgName,
+                CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+
+        // Save the data into disk
+        string dataName = foldername + "/data.dat";
+        FileStream file;
+
+        file = (File.Exists(dataName)) ?
+                File.OpenWrite(dataName) : file = File.Create(dataName);
+
+        JointManager.FileDataForm data = JointManager.Instance.GenerateDataFile(imgName);
+        BinaryFormatter bf = new BinaryFormatter();
+        bf.Serialize(file, data);
+        file.Close();
+
+        LoadFile(dataName);
     }
 
-    string GenerateFileName()
+    public void LoadFile(string fileName)
+    {
+        FileStream file;
+
+        if (File.Exists(fileName)) 
+        {
+            file = File.OpenRead(fileName);
+        }
+        else
+        {
+            Debug.LogError("File not found");
+            return;
+        }
+
+        BinaryFormatter bf = new BinaryFormatter();
+        JointManager.FileDataForm data = (JointManager.FileDataForm)bf.Deserialize(file);
+        file.Close();
+
+        data.PrintPara();
+    }
+
+    string GenerateImgName()
     {
         string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
         filename = filename.Replace('/', '_');
         filename = filename.Replace(' ', '_');
         filename = filename.Replace(':', '_');
         filename = filename.Replace('.', '_');
+        filename += ".png";
         return filename;
     }
 

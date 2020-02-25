@@ -94,4 +94,54 @@ public class JointManager : Singleton<JointManager>
         thumbJoints[0].localEulerAngles = defaultAngles[thumbJoints[0]] + new Vector3(0, alpha1, beta);
         thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
     }
+
+    [System.Serializable]
+    public class FileDataForm
+    {
+        float gamma1 = 0;
+        float gamma2 = 0;
+        float gamma3 = 0;
+        float alpha1 = 0;
+        float alpha2 = 0;
+        float beta = 0;
+        string imgName = "";
+
+        public FileDataForm(float g1, float g2, float g3, float a1, float a2, float b, string name)
+        {
+            gamma1 = g1;
+            gamma2 = g2;
+            gamma3 = g3;
+            alpha1 = a1;
+            alpha2 = a2;
+            beta = b;
+            imgName = name;
+        }
+
+        public void PrintPara()
+        {
+            Debug.Log(
+                "gamma1=" + gamma1 + ',' + 
+                "gamma2=" + gamma2 + ',' +
+                "gamma3=" + gamma3 + ',' +
+                "alpha1=" + alpha1 + ',' +
+                "alpha2=" + alpha2 + ',' +
+                "beta=" + beta + ',' +
+                "imgName=" + imgName + ',' 
+            );
+        }
+    }
+
+    public FileDataForm GenerateDataFile(string imgName)
+    {
+        FileDataForm fileData = new FileDataForm(
+            gamma1,
+            gamma2,
+            gamma3,
+            alpha1,
+            alpha2,
+            beta,
+            imgName
+        );
+        return fileData;
+    }
 }
