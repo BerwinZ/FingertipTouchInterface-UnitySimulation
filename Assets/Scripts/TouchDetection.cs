@@ -47,6 +47,15 @@ public class TouchDetection : MonoBehaviour
         touchPosition = Vector2.zero;
         touchPointMesh = touchPoint.GetComponent<MeshRenderer>();
 
+        if (fingertipType == JointType.Finger.thumb)
+        {
+            JointManager.Instance.thumb = this;
+        }
+        else if(fingertipType == JointType.Finger.index)
+        {
+            JointManager.Instance.index = this;
+        }
+        
         // Test Collider Code
         // if (fingertipType == JointType.Finger.thumb)
         // {

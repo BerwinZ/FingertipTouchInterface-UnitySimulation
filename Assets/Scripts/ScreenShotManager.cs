@@ -67,7 +67,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     }
 
     /// <summary>
-    /// Save a single file
+    /// Save a single image and store the para in the .csv file
     /// </summary>
     public void SaveSingleImage()
     {
@@ -86,39 +86,40 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
                 CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
 
         // Save the data into disk
-        string dataName = foldername + "/data.dat";
-        FileStream file;
-
-        file = (File.Exists(dataName)) ?
-                File.OpenWrite(dataName) : file = File.Create(dataName);
-
-        JointManager.FileDataForm data = JointManager.Instance.GenerateDataFile(imgName);
-        BinaryFormatter bf = new BinaryFormatter();
-        bf.Serialize(file, data);
-        file.Close();
-
-        LoadFile(dataName);
-    }
-
-    public void LoadFile(string fileName)
-    {
-        FileStream file;
-
-        if (File.Exists(fileName)) 
+        string dataName = foldername + "/data.csv";
+        StreamWriter writer;
+        if (File.Exists(dataName))
         {
-            file = File.OpenRead(fileName);
+            writer = new StreamWriter(dataName, true);
         }
         else
         {
-            Debug.LogError("File not found");
-            return;
+            writer = new StreamWriter(dataName);
+            writer.WriteLine(JointManager.Instance.GenerateStreamHeader());
         }
 
-        BinaryFormatter bf = new BinaryFormatter();
-        JointManager.FileDataForm data = (JointManager.FileDataForm)bf.Deserialize(file);
-        file.Close();
+        writer.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+        writer.Flush();
+        writer.Close();
 
-        data.PrintPara();
+        // LoadCSVFile(dataName);
+    }
+
+    /// <summary>
+    /// Load .csv file
+    /// </summary>
+    /// <param name="fileName"></param>
+    public void LoadCSVFile(string fileName)
+    {
+        StreamReader reader = new StreamReader(fileName);
+
+        string[] texts = reader.ReadToEnd().Split("\n"[0]);
+        reader.Close();
+
+        foreach (var text in texts)
+        {
+            Debug.Log(text);
+        }
     }
 
     string GenerateImgName()
