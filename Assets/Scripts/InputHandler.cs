@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using System.IO;
+using Common;
+using System;
 
 /// <summary>
 /// Handle the user's input, including
@@ -62,12 +64,26 @@ public class InputHandler : Singleton<InputHandler>
 
     public void ChangeFolderPath()
     {
-        System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
-        System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+        DirDialog dialog = new DirDialog();
+        // dialog.pidlRoot = new IntPtr(1941411595568);
+        dialog.pszDisplayName = new string(new char[2000]);
+        dialog.lpszTitle = "Open Project";
+        dialog.ulFlags = 0x00000040 | 0x00000010;
 
-        if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+        IntPtr pidlPtr = OpenBroswerDialog.SHBrowseForFolder(dialog);
+
+        char[] charArray = new char[2000];
+        for (int i = 0; i < 2000; i++)
+            charArray[i] = '\0';
+
+        if (OpenBroswerDialog.SHGetPathFromIDList(pidlPtr, charArray))
         {
-            Debug.Log(dialog.SelectedPath);
+            string fullDirPath = new String(charArray);
+            fullDirPath = fullDirPath.Substring(0, fullDirPath.IndexOf('\0'));
+            if (fullDirPath != "")
+            {
+                foldername = fullDirPath;
+            }
         }
     }
 
