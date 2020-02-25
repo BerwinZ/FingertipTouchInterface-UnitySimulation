@@ -12,10 +12,12 @@ using System;
 /// 1. Save single image
 /// 2. Exit the application
 /// </summary>
-public class InputHandler : Singleton<InputHandler>
+public class ScreenShotManager : Singleton<ScreenShotManager>
 {
-    public Camera cameraToShot = null;
+    [Header("Screen Shot Settings")]
+    public Camera cameraToTakeShot = null;
     public bool sameSizeWithWindow = false;
+
     Text debugText;
     public string foldername { get; private set; }
 
@@ -40,7 +42,7 @@ public class InputHandler : Singleton<InputHandler>
     }
 
     /// <summary>
-    /// Save the image of the view of the cameraToShot to the file
+    /// Save the image of the view of the cameraToTakeShot to the file
     /// </summary>
     void SaveImage()
     {
@@ -55,7 +57,7 @@ public class InputHandler : Singleton<InputHandler>
 
 
         System.IO.File.WriteAllBytes(filename,
-                                     CaptureScreen(cameraToShot, sameSizeWithWindow));
+                                     CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
 
         // Debug.Log("Saved in " + filename);
         // debugText.text = "Saved in " + filename;

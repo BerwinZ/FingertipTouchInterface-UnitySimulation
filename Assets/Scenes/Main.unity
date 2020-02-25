@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 50194133}
   - component: {fileID: 50194132}
   m_Layer: 5
-  m_Name: IndicatorThumb
+  m_Name: ThumbCoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -615,18 +615,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 133977368}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &133977368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1519,7 +1508,7 @@ GameObject:
   m_Component:
   - component: {fileID: 678366861}
   m_Layer: 5
-  m_Name: Fixed
+  m_Name: FixedItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2152,10 +2141,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 837565845}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5616f441bc0110b48b491df435ae65a4, type: 3}
+  m_Script: {fileID: 11500000, guid: f683ecf368c90a940b30ed3bf072115d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraToShot: {fileID: 963194227}
+  cameraToTakeShot: {fileID: 963194227}
   sameSizeWithWindow: 1
 --- !u!4 &837565847
 Transform:
@@ -2335,18 +2324,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 854615398}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &854615398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4027,18 +4005,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1309083264}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1309083264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4174,7 +4141,7 @@ GameObject:
   - component: {fileID: 1346917491}
   - component: {fileID: 1346917490}
   m_Layer: 5
-  m_Name: IndicatorIndex
+  m_Name: IndexCoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4251,7 +4218,7 @@ GameObject:
   - component: {fileID: 1409800293}
   - component: {fileID: 1409800292}
   m_Layer: 5
-  m_Name: Dot
+  m_Name: DrawDot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4480,18 +4447,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1476804460}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1476804460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4795,18 +4751,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1647224369}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1647224369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5913,18 +5858,7 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2073173220}
-        m_MethodName: SendDataToJoint
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2073173220
 MonoBehaviour:
   m_ObjectHideFlags: 0

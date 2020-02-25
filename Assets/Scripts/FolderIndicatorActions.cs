@@ -16,6 +16,6 @@ public class FolderIndicatorActions : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        folderIndicator.text = InputHandler.Instance.foldername;   
+        folderIndicator.text = ScreenShotManager.Instance.foldername;   
     }
 }

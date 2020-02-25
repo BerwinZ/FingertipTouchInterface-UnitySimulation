@@ -20,6 +20,7 @@ public class SliderActions : MonoBehaviour
     {
         slider = transform.GetComponent<Slider>();
         text = transform.Find("Number").GetComponent<Text>();
+        slider.onValueChanged.AddListener(delegate { SendDataToJoint(); });
     }
 
     // Update is called once per frame
