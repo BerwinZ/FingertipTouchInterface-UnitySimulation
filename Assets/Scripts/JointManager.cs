@@ -23,6 +23,8 @@ public class JointManager : Singleton<JointManager>
     [SerializeField, Range(-20, 20)]
     float beta = 0;
 
+    public bool controlInEditor = false;
+
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;
     Dictionary<Transform, Vector3> defaultAngles;
@@ -50,6 +52,14 @@ public class JointManager : Singleton<JointManager>
         foreach (var item in thumbJoints)
         {
             defaultAngles[item] = item.localEulerAngles;
+        }
+    }
+
+    void Update()
+    {
+        if(controlInEditor)
+        {
+            SetJointsPara();
         }
     }
 
