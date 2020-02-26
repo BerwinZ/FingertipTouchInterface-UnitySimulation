@@ -98,6 +98,7 @@ public class JointManager : Singleton<JointManager>
         thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
     }
 
+#region ForDataSaveInDisk
     /// <summary>
     /// Generate the header line for the .csv file
     /// </summary>
@@ -129,4 +130,5 @@ public class JointManager : Singleton<JointManager>
             imgName;
         return data;
     }
+#endregion ForDataSaveInDisk
 }

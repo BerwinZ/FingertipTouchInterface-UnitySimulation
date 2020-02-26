@@ -19,6 +19,9 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     public Camera cameraToTakeShot = null;
     public bool sameSizeWithWindow = false;
 
+    [Header("Dataset Menu")]
+    public GameObject datasetMenu;
+
     Text debugText;
     public string foldername { get; private set; }
 
@@ -27,16 +30,13 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     {
         debugText = GameObject.Find("DebugText").GetComponent<Text>();
         foldername = Application.dataPath + "/Screenshots";
+        datasetMenu.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            SaveImage();
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             ExitApplication();
         }
@@ -44,12 +44,47 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     }
 
     /// <summary>
-    /// Save the image of the view of the cameraToTakeShot to the file
+    /// Open the dataset dialog
     /// </summary>
-    void SaveImage()
+    public void OpenDatasetSettings()
     {
-        // Actions in disk
-        string filename = foldername + "/ScreenShot.png";
+        datasetMenu.SetActive(true);
+    }
+
+    /// <summary>
+    /// Close the dataset dialog or suspend the generating process
+    /// </summary>
+    public void CancelSettingsOrGenerating()
+    {
+        StopAllCoroutines();
+        commonWriter.Flush();
+        commonWriter.Close();
+        // DatasetManager.Instance.UpdateCurrentSampleCnt(0);
+        // DatasetManager.Instance.UpdateTotalSampleCnt(0);
+        datasetMenu.SetActive(false);
+    }
+
+    /// <summary>
+    /// Start to generate dataset
+    /// </summary>
+    public void StartGenatingDataset()
+    {
+        Dictionary<string, Dictionary<string, float>> datasetPara = new Dictionary<string, Dictionary<string, float>>();
+
+        if (DatasetManager.Instance.PackData(out datasetPara))
+        {
+            StartCoroutine(SaveImages(datasetPara));
+        }
+
+    }
+
+    StreamWriter commonWriter;
+    /// <summary>
+    /// Iterate the parameters and save image and data to disk
+    /// </summary>
+    IEnumerator SaveImages(Dictionary<string, Dictionary<string, float>> para)
+    {
+        Debug.Log("Start Generaing...");
 
         // Check whether the folder exists
         if (!Directory.Exists(foldername))
@@ -57,12 +92,99 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             Directory.CreateDirectory(foldername);
         }
 
+        // Prepare the data file
+        string dataName = foldername + "/data.csv";
+        if (File.Exists(dataName))
+        {
+            commonWriter = new StreamWriter(dataName, true);
+        }
+        else
+        {
+            commonWriter = new StreamWriter(dataName);
+            commonWriter.WriteLine(JointManager.Instance.GenerateStreamHeader());
+        }
 
-        System.IO.File.WriteAllBytes(filename,
-                                     CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+        // Calculate the total number
+        long totalCnt = 1;
+        totalCnt *= (para["gamma1"]["step"] == 0)? 1: Convert.ToInt64((para["gamma1"]["max"] - para["gamma1"]["min"]) / para["gamma1"]["step"]);
+        totalCnt *= (para["gamma2"]["step"] == 0)? 1: Convert.ToInt64((para["gamma2"]["max"] - para["gamma2"]["min"]) / para["gamma2"]["step"]);
+        totalCnt *= (para["gamma3"]["step"] == 0)? 1: Convert.ToInt64((para["gamma3"]["max"] - para["gamma3"]["min"]) / para["gamma3"]["step"]);
+        totalCnt *= (para["alpha1"]["step"] == 0)? 1: Convert.ToInt64((para["alpha1"]["max"] - para["alpha1"]["min"]) / para["alpha1"]["step"]);
+        totalCnt *= (para["alpha2"]["step"] == 0)? 1: Convert.ToInt64((para["alpha2"]["max"] - para["alpha2"]["min"]) / para["alpha2"]["step"]);
+        totalCnt *= (para["beta"]["step"] == 0)? 1: Convert.ToInt64((para["beta"]["max"] - para["beta"]["min"]) / para["beta"]["step"]);
+        DatasetManager.Instance.UpdateTotalSampleCnt(totalCnt);
 
-        // Debug.Log("Saved in " + filename);
-        // debugText.text = "Saved in " + filename;
+        // Start iteration
+        long currentCnt = 0;
+        long validCnt = 0;
+        for (float gamma1 = para["gamma1"]["min"];
+        gamma1 <= para["gamma1"]["max"];
+        gamma1 += para["gamma1"]["step"])
+        {
+            JointManager.Instance.UpdateParaValue(JointType.DOF.gamma1, gamma1);
+
+            for (float gamma2 = para["gamma2"]["min"];
+            gamma2 <= para["gamma2"]["max"];
+            gamma2 += para["gamma2"]["step"])
+            {
+                JointManager.Instance.UpdateParaValue(JointType.DOF.gamma2, gamma2);
+
+                for (float gamma3 = para["gamma3"]["min"];
+                gamma3 <= para["gamma3"]["max"];
+                gamma3 += para["gamma3"]["step"])
+                {
+                    JointManager.Instance.UpdateParaValue(JointType.DOF.gamma3, gamma3);
+
+                    for (float alpha1 = para["alpha1"]["min"];
+                    alpha1 <= para["alpha1"]["max"];
+                    alpha1 += para["alpha1"]["step"])
+                    {
+                        JointManager.Instance.UpdateParaValue(JointType.DOF.alpha1, alpha1);
+
+                        for (float alpha2 = para["alpha2"]["min"];
+                        alpha2 <= para["alpha2"]["max"];
+                        alpha2 += para["alpha2"]["step"])
+                        {
+                            JointManager.Instance.UpdateParaValue(JointType.DOF.alpha2, alpha2);
+
+                            for (float beta = para["beta"]["min"];
+                            beta <= para["beta"]["max"];
+                            beta += para["beta"]["step"])
+                            {
+                                JointManager.Instance.UpdateParaValue(JointType.DOF.beta, beta);
+
+                                currentCnt++;
+                                DatasetManager.Instance.UpdateCurrentSampleCnt(currentCnt);
+
+                                yield return new WaitForSeconds(0.05f);
+
+                                // If could save, save image here
+                                if (JointManager.Instance.thumb.isTouching && !JointManager.Instance.thumb.isOverlapped)
+                                {
+                                    validCnt++;
+
+                                    // Get a unique image name
+                                    string imgName = GenerateImgName();
+                                    // Save the image into disk
+                                    System.IO.File.WriteAllBytes(
+                                            foldername + '/' + imgName,
+                                            CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+                                    // Save para data
+                                    commonWriter.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        commonWriter.Flush();
+        commonWriter.Close();
+
+        WinFormTools.MessageBox(IntPtr.Zero, "Valid Image: " + validCnt, "Finish", 0);
+
+        Debug.Log("Finish Generaing!");
 
     }
 
@@ -71,13 +193,21 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     /// </summary>
     public void SaveSingleImage()
     {
+        // Check whether can save this img currently
+        if (JointManager.Instance.thumb.isTouching == false ||
+           JointManager.Instance.thumb.isOverlapped == true)
+        {
+            WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
+            return;
+        }
+
         // Check whether the folder exists
         if (!Directory.Exists(foldername))
         {
             Directory.CreateDirectory(foldername);
         }
 
-        // Get a file name
+        // Get a unique image name
         string imgName = GenerateImgName();
 
         // Save the image into disk
@@ -97,7 +227,6 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             writer = new StreamWriter(dataName);
             writer.WriteLine(JointManager.Instance.GenerateStreamHeader());
         }
-
         writer.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
         writer.Flush();
         writer.Close();
@@ -109,7 +238,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     /// Load .csv file
     /// </summary>
     /// <param name="fileName"></param>
-    public void LoadCSVFile(string fileName)
+    void LoadCSVFile(string fileName)
     {
         StreamReader reader = new StreamReader(fileName);
 
@@ -120,17 +249,6 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         {
             Debug.Log(text);
         }
-    }
-
-    string GenerateImgName()
-    {
-        string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
-        filename = filename.Replace('/', '_');
-        filename = filename.Replace(' ', '_');
-        filename = filename.Replace(':', '_');
-        filename = filename.Replace('.', '_');
-        filename += ".png";
-        return filename;
     }
 
     /// <summary>
@@ -160,6 +278,21 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
                 FolderIndicatorActions.Instance.UpdateText(foldername);
             }
         }
+    }
+
+    /// <summary>
+    /// Generate a unique PNG image name with timestamp
+    /// </summary>
+    /// <returns></returns>
+    string GenerateImgName()
+    {
+        string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
+        filename = filename.Replace('/', '_');
+        filename = filename.Replace(' ', '_');
+        filename = filename.Replace(':', '_');
+        filename = filename.Replace('.', '_');
+        filename += ".png";
+        return filename;
     }
 
     /// <summary>

@@ -68,4 +68,10 @@ namespace Common
         public static extern bool SHGetPathFromIDList([In] IntPtr pidl, [In, Out] char[] fileName);
 
     }
+
+    public class WinFormTools
+    {
+        [DllImport("User32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
+        public static extern int MessageBox(IntPtr handle, String message, String title, int type);
+    }
 }
