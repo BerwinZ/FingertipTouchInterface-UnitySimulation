@@ -111,6 +111,11 @@ public class DatasetManager : Singleton<DatasetManager>
                 msg = itemsHeader[i] + ": The step cannot be 0";
                 return false;
             }
+            if (list[2] < 1e-8f)
+            {
+                msg = itemsHeader[i] + ": The step is too small";
+                return false;
+            }
         }
         return true;
     }

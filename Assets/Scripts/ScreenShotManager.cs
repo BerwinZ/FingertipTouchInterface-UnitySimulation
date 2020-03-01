@@ -29,7 +29,8 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     void Start()
     {
         debugText = GameObject.Find("DebugText").GetComponent<Text>();
-        foldername = Application.dataPath + "/Screenshots";
+        // foldername = Application.dataPath + "/Screenshots";
+        foldername = "D:/Desktop/UnityData";
         datasetMenu.SetActive(false);
     }
 
@@ -57,9 +58,12 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     public void CancelSettingsOrGenerating()
     {
         StopAllCoroutines();
-        commonWriter.Flush();
-        commonWriter.Close();
-        // DatasetManager.Instance.UpdateCurrentSampleCnt(0);
+        if (commonWriter != null)
+        {
+            commonWriter.Flush();
+            commonWriter.Close();
+        }
+        DatasetManager.Instance.UpdateCurrentSampleCnt(0);
         // DatasetManager.Instance.UpdateTotalSampleCnt(0);
         datasetMenu.SetActive(false);
     }
@@ -106,12 +110,12 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
 
         // Calculate the total number
         long totalCnt = 1;
-        totalCnt *= (para["gamma1"]["step"] == 0)? 1: Convert.ToInt64((para["gamma1"]["max"] - para["gamma1"]["min"]) / para["gamma1"]["step"]);
-        totalCnt *= (para["gamma2"]["step"] == 0)? 1: Convert.ToInt64((para["gamma2"]["max"] - para["gamma2"]["min"]) / para["gamma2"]["step"]);
-        totalCnt *= (para["gamma3"]["step"] == 0)? 1: Convert.ToInt64((para["gamma3"]["max"] - para["gamma3"]["min"]) / para["gamma3"]["step"]);
-        totalCnt *= (para["alpha1"]["step"] == 0)? 1: Convert.ToInt64((para["alpha1"]["max"] - para["alpha1"]["min"]) / para["alpha1"]["step"]);
-        totalCnt *= (para["alpha2"]["step"] == 0)? 1: Convert.ToInt64((para["alpha2"]["max"] - para["alpha2"]["min"]) / para["alpha2"]["step"]);
-        totalCnt *= (para["beta"]["step"] == 0)? 1: Convert.ToInt64((para["beta"]["max"] - para["beta"]["min"]) / para["beta"]["step"]);
+        totalCnt *= (para["gamma1"]["step"] == 0) ? 1 : Convert.ToInt64((para["gamma1"]["max"] - para["gamma1"]["min"]) / para["gamma1"]["step"]);
+        totalCnt *= (para["gamma2"]["step"] == 0) ? 1 : Convert.ToInt64((para["gamma2"]["max"] - para["gamma2"]["min"]) / para["gamma2"]["step"]);
+        totalCnt *= (para["gamma3"]["step"] == 0) ? 1 : Convert.ToInt64((para["gamma3"]["max"] - para["gamma3"]["min"]) / para["gamma3"]["step"]);
+        totalCnt *= (para["alpha1"]["step"] == 0) ? 1 : Convert.ToInt64((para["alpha1"]["max"] - para["alpha1"]["min"]) / para["alpha1"]["step"]);
+        totalCnt *= (para["alpha2"]["step"] == 0) ? 1 : Convert.ToInt64((para["alpha2"]["max"] - para["alpha2"]["min"]) / para["alpha2"]["step"]);
+        totalCnt *= (para["beta"]["step"] == 0) ? 1 : Convert.ToInt64((para["beta"]["max"] - para["beta"]["min"]) / para["beta"]["step"]);
         DatasetManager.Instance.UpdateTotalSampleCnt(totalCnt);
 
         // Start iteration
@@ -119,37 +123,37 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         long validCnt = 0;
         for (float gamma1 = para["gamma1"]["min"];
         gamma1 <= para["gamma1"]["max"];
-        gamma1 += para["gamma1"]["step"])
+        gamma1 += Mathf.Max(para["gamma1"]["step"], 1e-8f))
         {
             JointManager.Instance.UpdateParaValue(JointType.DOF.gamma1, gamma1);
 
             for (float gamma2 = para["gamma2"]["min"];
             gamma2 <= para["gamma2"]["max"];
-            gamma2 += para["gamma2"]["step"])
+            gamma2 += Mathf.Max(para["gamma2"]["step"], 1e-8f))
             {
                 JointManager.Instance.UpdateParaValue(JointType.DOF.gamma2, gamma2);
 
                 for (float gamma3 = para["gamma3"]["min"];
                 gamma3 <= para["gamma3"]["max"];
-                gamma3 += para["gamma3"]["step"])
+                gamma3 += Mathf.Max(para["gamma3"]["step"], 1e-8f))
                 {
                     JointManager.Instance.UpdateParaValue(JointType.DOF.gamma3, gamma3);
 
                     for (float alpha1 = para["alpha1"]["min"];
                     alpha1 <= para["alpha1"]["max"];
-                    alpha1 += para["alpha1"]["step"])
+                    alpha1 += Mathf.Max(para["alpha1"]["step"], 1e-8f))
                     {
                         JointManager.Instance.UpdateParaValue(JointType.DOF.alpha1, alpha1);
 
                         for (float alpha2 = para["alpha2"]["min"];
                         alpha2 <= para["alpha2"]["max"];
-                        alpha2 += para["alpha2"]["step"])
+                        alpha2 += Mathf.Max(para["alpha2"]["step"], 1e-8f))
                         {
                             JointManager.Instance.UpdateParaValue(JointType.DOF.alpha2, alpha2);
 
                             for (float beta = para["beta"]["min"];
                             beta <= para["beta"]["max"];
-                            beta += para["beta"]["step"])
+                            beta += Mathf.Max(para["beta"]["step"], 1e-8f))
                             {
                                 JointManager.Instance.UpdateParaValue(JointType.DOF.beta, beta);
 
@@ -181,6 +185,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
 
         commonWriter.Flush();
         commonWriter.Close();
+        commonWriter = null;
 
         WinFormTools.MessageBox(IntPtr.Zero, "Valid Image: " + validCnt, "Finish", 0);
 
