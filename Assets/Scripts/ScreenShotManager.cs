@@ -125,37 +125,37 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
         gamma1 <= para["gamma1"]["max"];
         gamma1 += Mathf.Max(para["gamma1"]["step"], 1e-8f))
         {
-            JointManager.Instance.UpdateParaValue(JointType.DOF.gamma1, gamma1);
+            JointManager.Instance.UpdateParaValue(DOF.gamma1, gamma1);
 
             for (float gamma2 = para["gamma2"]["min"];
             gamma2 <= para["gamma2"]["max"];
             gamma2 += Mathf.Max(para["gamma2"]["step"], 1e-8f))
             {
-                JointManager.Instance.UpdateParaValue(JointType.DOF.gamma2, gamma2);
+                JointManager.Instance.UpdateParaValue(DOF.gamma2, gamma2);
 
                 for (float gamma3 = para["gamma3"]["min"];
                 gamma3 <= para["gamma3"]["max"];
                 gamma3 += Mathf.Max(para["gamma3"]["step"], 1e-8f))
                 {
-                    JointManager.Instance.UpdateParaValue(JointType.DOF.gamma3, gamma3);
+                    JointManager.Instance.UpdateParaValue(DOF.gamma3, gamma3);
 
                     for (float alpha1 = para["alpha1"]["min"];
                     alpha1 <= para["alpha1"]["max"];
                     alpha1 += Mathf.Max(para["alpha1"]["step"], 1e-8f))
                     {
-                        JointManager.Instance.UpdateParaValue(JointType.DOF.alpha1, alpha1);
+                        JointManager.Instance.UpdateParaValue(DOF.alpha1, alpha1);
 
                         for (float alpha2 = para["alpha2"]["min"];
                         alpha2 <= para["alpha2"]["max"];
                         alpha2 += Mathf.Max(para["alpha2"]["step"], 1e-8f))
                         {
-                            JointManager.Instance.UpdateParaValue(JointType.DOF.alpha2, alpha2);
+                            JointManager.Instance.UpdateParaValue(DOF.alpha2, alpha2);
 
                             for (float beta = para["beta"]["min"];
                             beta <= para["beta"]["max"];
                             beta += Mathf.Max(para["beta"]["step"], 1e-8f))
                             {
-                                JointManager.Instance.UpdateParaValue(JointType.DOF.beta, beta);
+                                JointManager.Instance.UpdateParaValue(DOF.beta, beta);
 
                                 currentCnt++;
                                 DatasetManager.Instance.UpdateCurrentSampleCnt(currentCnt);

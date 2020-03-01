@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common;
 
 /// <summary>
 /// Draw the position of the touch point
@@ -26,11 +27,11 @@ public class DrawBoard : Singleton<DrawBoard>
         TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
         foreach(var finger in fingeres)
         {
-            if(finger.fingertipType == JointType.Finger.thumb)
+            if(finger.fingertipType == Finger.thumb)
             {
                 thumb = finger;
             }
-            else if(finger.fingertipType == JointType.Finger.index)
+            else if(finger.fingertipType == Finger.index)
             {
                 index = finger;
             }

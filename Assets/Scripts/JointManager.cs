@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 /// <summary>
 /// This class control the values of 6 DOF of the thumb and index finger joints.
@@ -63,26 +64,26 @@ public class JointManager : Singleton<JointManager>
         }
     }
 
-    public void UpdateParaValue(JointType.DOF joint, float value)
+    public void UpdateParaValue(DOF joint, float value)
     {
         switch (joint)
         {
-            case JointType.DOF.alpha1:
+            case DOF.alpha1:
                 alpha1 = value;
                 break;
-            case JointType.DOF.alpha2:
+            case DOF.alpha2:
                 alpha2 = value;
                 break;
-            case JointType.DOF.beta:
+            case DOF.beta:
                 beta = value;
                 break;
-            case JointType.DOF.gamma1:
+            case DOF.gamma1:
                 gamma1 = value;
                 break;
-            case JointType.DOF.gamma2:
+            case DOF.gamma2:
                 gamma2 = value;
                 break;
-            case JointType.DOF.gamma3:
+            case DOF.gamma3:
                 gamma3 = value;
                 break;
             default:

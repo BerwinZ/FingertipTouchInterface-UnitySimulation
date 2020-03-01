@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common;
 
 /// <summary>
 /// Send slider data to the JointManager.
@@ -10,7 +11,7 @@ public class SliderActions : MonoBehaviour
 {
 
     [SerializeField]
-    JointType.DOF handleType = JointType.DOF.alpha1;
+    DOF handleType = DOF.alpha1;
 
     Slider slider;
     Text text;

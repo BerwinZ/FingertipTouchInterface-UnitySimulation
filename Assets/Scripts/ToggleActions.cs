@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common;
 
 /// <summary>
 /// Get flags from JointManger
@@ -29,7 +30,7 @@ public class ToggleActions : MonoBehaviour
         TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
         foreach(var finger in fingeres)
         {
-            if(finger.fingertipType == JointType.Finger.thumb)
+            if(finger.fingertipType == Finger.thumb)
             {
                 thumb = finger;
             }

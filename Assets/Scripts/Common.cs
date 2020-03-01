@@ -1,11 +1,32 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System;
 
 namespace Common
 {
+    #region FingerAndJointsEnum
+    public enum DOF
+    {
+        alpha1,
+        alpha2,
+        beta,
+        gamma1,
+        gamma2,
+        gamma3,
+    }
+
+    public enum Finger
+    {
+        thumb,
+        index,
+    }
+    #endregion FingerAndJointsEnum
+
+    #region FileFolderDialog
+    /// <summary>
+    /// File Dialog
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class FileDlg
     {
@@ -34,18 +55,27 @@ namespace Common
         public int flagsEx = 0;
     }
 
+    /// <summary>
+    /// Open File Dialog
+    /// </summary>
     public class OpenFileDialog
     {
         [DllImport("Comdlg32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
         public static extern bool GetOpenFileName([In, Out] FileDlg ofd);
     }
 
+    /// <summary>
+    /// Save File Dialog
+    /// </summary>
     public class SaveFileDialog
     {
         [DllImport("Comdlg32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
         public static extern bool GetSaveFileName([In, Out] FileDlg ofd);
     }
 
+    /// <summary>
+    /// Folder Dialog
+    /// </summary>
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class DirDialog
     {
@@ -59,6 +89,9 @@ namespace Common
         public int iImage = 0;
     }
 
+    /// <summary>
+    /// Open folder dialog
+    /// </summary>
     public class OpenBroswerDialog
     {
         [DllImport("shell32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
@@ -74,4 +107,5 @@ namespace Common
         [DllImport("User32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
         public static extern int MessageBox(IntPtr handle, String message, String title, int type);
     }
+    #endregion FileFolderDialog
 }

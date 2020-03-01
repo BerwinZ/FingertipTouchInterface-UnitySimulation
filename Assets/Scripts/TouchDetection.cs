@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 /// <summary>
 /// Detect the touch action, including the following parameters
@@ -11,10 +12,10 @@ using UnityEngine;
 public class TouchDetection : MonoBehaviour
 {
     // The type of this finger
-    public JointType.Finger fingertipType = JointType.Finger.thumb;
+    public Finger fingertipType = Finger.thumb;
 
     // Type of the finger that is isTouching with
-    JointType.Finger targetFingerType;
+    Finger targetFingerType;
 
     // Whether this finger is isTouching by another
     public bool isTouching { get; private set; }
@@ -36,7 +37,7 @@ public class TouchDetection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        targetFingerType = (JointType.Finger)(((int)fingertipType + 1) % 2);
+        targetFingerType = (Finger)(((int)fingertipType + 1) % 2);
 
         isTouching = false;
         isOverlapped = false;
@@ -47,17 +48,17 @@ public class TouchDetection : MonoBehaviour
         touchPosition = Vector2.zero;
         touchPointMesh = touchPoint.GetComponent<MeshRenderer>();
 
-        if (fingertipType == JointType.Finger.thumb)
+        if (fingertipType == Finger.thumb)
         {
             JointManager.Instance.thumb = this;
         }
-        else if(fingertipType == JointType.Finger.index)
+        else if(fingertipType == Finger.index)
         {
             JointManager.Instance.index = this;
         }
         
         // Test Collider Code
-        // if (fingertipType == JointType.Finger.thumb)
+        // if (fingertipType == Finger.thumb)
         // {
         //     TestClosestPoint();
         // }
@@ -69,7 +70,7 @@ public class TouchDetection : MonoBehaviour
         // Debug.Log(fingertipType.ToString() + " isTouching: " + isTouching);
 
         // Test Collider Code
-        // if (fingertipType == JointType.Finger.thumb)
+        // if (fingertipType == Finger.thumb)
         // {
         //     TestClosestPoint();
         // }
