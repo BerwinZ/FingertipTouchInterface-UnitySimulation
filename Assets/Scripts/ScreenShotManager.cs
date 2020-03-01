@@ -23,14 +23,18 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     public GameObject datasetMenu;
 
     Text debugText;
-    public string foldername { get; private set; }
+    string foldername;
+    public delegate void FolderNameChangeHandler(string str);
+    public event FolderNameChangeHandler ChangeFolderName;
+
 
     // Start is called before the first frame update
     void Start()
     {
         debugText = GameObject.Find("DebugText").GetComponent<Text>();
-        // foldername = Application.dataPath + "/Screenshots";
-        foldername = "D:/Desktop/UnityData";
+        ChangeFolderName += OnChangeFolderName;
+        ChangeFolderName("D:/Desktop/UnityData");
+        // ChangeFolderName(Application.dataPath + "/Screenshots");
         datasetMenu.SetActive(false);
     }
 
@@ -279,10 +283,14 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             fullDirPath = fullDirPath.Substring(0, fullDirPath.IndexOf('\0'));
             if (fullDirPath != "")
             {
-                foldername = fullDirPath;
-                FolderIndicatorActions.Instance.UpdateText(foldername);
+                OnChangeFolderName(fullDirPath);
             }
         }
+    }
+
+    void OnChangeFolderName(string str)
+    {
+        foldername = str;
     }
 
     /// <summary>
