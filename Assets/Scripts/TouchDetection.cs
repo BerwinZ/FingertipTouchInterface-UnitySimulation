@@ -24,6 +24,7 @@ public class TouchDetection : MonoBehaviour
     Collider m_Collider;
 
 
+
     public event StatusUpdateHandler TouchStatusUpdatePublisher;
     // Whether this finger is isTouching by another
     bool isTouching;
@@ -76,6 +77,9 @@ public class TouchDetection : MonoBehaviour
 
         m_Collider = GetComponent<Collider>();
 
+        otherFinger = ScriptFind.FindTouchDetection(targetFingerType);
+        otherCollider = otherFinger.transform.GetComponent<Collider>();
+
         // Get the touch point object
         touchPointObj = transform.GetChild(0);
         touchPointObjMesh = touchPointObj.GetComponent<MeshRenderer>();
@@ -87,6 +91,9 @@ public class TouchDetection : MonoBehaviour
         IsTouching = false;
         IsOverlapped = false;
         TouchPosition = Vector2.zero;
+
+        // Subscribe the joint update event
+        JointManager.Instance.JointUpdatePublisher += DetectTouching;
     }
 
     void OnUpdateTouchStatus(bool flag)
@@ -94,30 +101,21 @@ public class TouchDetection : MonoBehaviour
         touchPointObjMesh.enabled = flag;
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        DetectTouching(other, true);
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        DetectTouching(other, true);
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        DetectTouching(other, false);
-    }
-
     #region ParaforAccurateTouchDetection
     // other finger's script
     TouchDetection otherFinger;
+
+    // other finger's collider
+    Collider otherCollider;
 
     // Ray to intersect with this collider  
     Ray ray = new Ray();
 
     // Ray hit result          
-    RaycastHit hit;
+    RaycastHit hitResult;
+
+    // Ray hit colliders
+    Collider[] hitColliders;
 
     // This capsule collider's radius, related to the collider obj's coordinate 
     float radius;
@@ -150,10 +148,24 @@ public class TouchDetection : MonoBehaviour
     Vector2 worldTouchMM = Vector2.zero;
     #endregion ParaforAccurateTouchDetection
 
-    void DetectTouching(Collider other, bool isEntry)
+    void DetectTouching()
     {
-        otherFinger = other.transform.GetComponent<TouchDetection>();
-        if (otherFinger == null || otherFinger.fingertipType != targetFingerType)
+        hitColliders = Physics.OverlapSphere(
+            otherCollider.ClosestPoint(m_Collider.bounds.center), 0.0001f);
+        bool flag = false;
+        foreach (var coll in hitColliders)
+        {
+            if (coll == m_Collider)
+            {
+                flag = true;
+            }
+        }
+        AccurateDetect(otherCollider, flag);
+    }
+
+    void AccurateDetect(Collider other, bool isEntry)
+    {
+        if (other == null)
             return;
 
         IsTouching = isEntry;
@@ -166,8 +178,8 @@ public class TouchDetection : MonoBehaviour
             ray.direction = m_Collider.bounds.center - other.bounds.center;
 
             // Shoot the ray, get the touch point which is the intersection between ray and the collider
-            m_Collider.Raycast(ray, out hit, 100.0f);
-            touchPointObj.position = hit.point;
+            m_Collider.Raycast(ray, out hitResult, 100.0f);
+            touchPointObj.position = hitResult.point;
 
             // Set overlapped true if the distance between two touch point is too large
             IsOverlapped =

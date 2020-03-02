@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common;
 
+public delegate void JointUpdateHander();
+
 /// <summary>
 /// This class control the values of 6 DOF of the thumb and index finger joints.
 /// </summary>
@@ -32,6 +34,7 @@ public class JointManager : Singleton<JointManager>
 
     TouchDetection thumb;
     TouchDetection index;
+    public JointUpdateHander JointUpdatePublisher;
 
     // Start is called before the first frame update
     void Start()
@@ -111,6 +114,8 @@ public class JointManager : Singleton<JointManager>
 
         thumbJoints[0].localEulerAngles = defaultAngles[thumbJoints[0]] + new Vector3(0, alpha1, beta);
         thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
+
+        JointUpdatePublisher?.Invoke();
     }
 
 #region ForDataSaveInDisk
