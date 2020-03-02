@@ -15,7 +15,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 /// 3. Change the folder to save images
 /// 4. Exit the application
 /// </summary>
-public class ScreenShotManager : Singleton<ScreenShotManager>
+public class ScreenshotManager : Singleton<ScreenshotManager>
 {
     [Header("Screen Shot Settings")]
     public Camera cameraToTakeShot = null;
@@ -178,7 +178,8 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
                                 currentCnt++;
                                 DatasetManager.Instance.UpdateCurrentSampleCnt(currentCnt);
 
-                                yield return new WaitForSeconds(0.05f);
+                                // yield return new WaitForSeconds(0.05f);
+                                yield return null;
 
                                 // If could save, save image here
                                 if (thumb.IsTouching && !thumb.IsOverlapped)
