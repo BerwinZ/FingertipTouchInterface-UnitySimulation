@@ -11,7 +11,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 /// <summary>
 /// Handle the user's input, including
 /// 1. Save single image
-/// 2. Exit the application
+/// 2. Save serveral images according to the dataset settings
+/// 3. Change the folder to save images
+/// 4. Exit the application
 /// </summary>
 public class ScreenShotManager : Singleton<ScreenShotManager>
 {

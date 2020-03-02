@@ -7788,7 +7788,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: -0.17931747, y: 99.99994}
-  m_SizeDelta: {x: 640, y: 60}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1137266671
 MonoBehaviour:
@@ -15109,6 +15109,7 @@ MonoBehaviour:
   alpha1: 0
   alpha2: -0
   beta: 0
+  controlInEditor: 0
 --- !u!1 &8929560994107636032
 GameObject:
   m_ObjectHideFlags: 0
