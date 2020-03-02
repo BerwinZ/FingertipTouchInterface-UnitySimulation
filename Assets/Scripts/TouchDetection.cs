@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common;
 
+
+public delegate void StatusUpdateHandler(bool flag);
+public delegate void PositionChangeHandler(Vector2 pos);
+
 /// <summary>
 /// Detect the touch action, including the following parameters
 /// 1. If touched
@@ -20,68 +24,74 @@ public class TouchDetection : MonoBehaviour
     Collider m_Collider;
 
 
+    public event StatusUpdateHandler TouchStatusUpdatePublisher;
     // Whether this finger is isTouching by another
-    public bool isTouching { get; private set; }
+    bool isTouching;
+    public bool IsTouching
+    {
+        get { return isTouching; }
+        private set
+        {
+            isTouching = value;
+            TouchStatusUpdatePublisher?.Invoke(value);
+        }
+    }
+
+    public event StatusUpdateHandler OverlapStatusUpdatePublisher;
     // Whether this finger is overlapped too much
-    public bool isOverlapped { get; private set; }
-    public delegate void TouchUpdateHandler(bool flag);
-    public event TouchUpdateHandler UpdateTouchStatus;
-    public delegate void OverlapUpdateHandler(bool flag);
-    public event OverlapUpdateHandler UpdateOverlapStatus;
+    bool isOverlapped;
+    public bool IsOverlapped
+    {
+        get { return isOverlapped; }
+        private set
+        {
+            isOverlapped = value;
+            OverlapStatusUpdatePublisher?.Invoke(value);
+        }
+    }
+
 
     // The touch point
     Transform touchPointObj;
     MeshRenderer touchPointObjMesh;
+    public event PositionChangeHandler TouchPositionUpdatePublisher;
     // For thumb, the touch position is the X-Y position relative to the index finger coordinate. 
     // For index finger, the touch position is the X-Y position relative to the thumb coordinate. 
-    public Vector2 touchPosition { get; private set; }
-    public delegate void PositionChangeHandler(Vector2 pos);
-    public event PositionChangeHandler UpdateTouchPosition;
+    Vector2 touchPosition;
+    public Vector2 TouchPosition
+    {
+        get { return touchPosition; }
+        private set
+        {
+            touchPosition = value;
+            TouchPositionUpdatePublisher?.Invoke(value);
+        }
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
         targetFingerType = (Finger)(((int)fingertipType + 1) % 2);
 
-        isTouching = false;
-        isOverlapped = false;
-
         m_Collider = GetComponent<Collider>();
-
-        // Register the events
-        UpdateTouchStatus += OnUpdateTouchStatus;
-        UpdateOverlapStatus += OnUpdateOverlapStatus;
-        UpdateTouchPosition += OnUpdateTouchPosition;
-        UpdateTouchPosition(Vector2.zero);
 
         // Get the touch point object
         touchPointObj = transform.GetChild(0);
         touchPointObjMesh = touchPointObj.GetComponent<MeshRenderer>();
 
-        if (fingertipType == Finger.thumb)
-        {
-            JointManager.Instance.thumb = this;
-        }
-        else if (fingertipType == Finger.index)
-        {
-            JointManager.Instance.index = this;
-        }
-    }
+        // Register the events
+        TouchStatusUpdatePublisher += OnUpdateTouchStatus;
 
-    void OnUpdateTouchPosition(Vector2 touchPos)
-    {
-        touchPosition = touchPos;
+        // Set the values
+        IsTouching = false;
+        IsOverlapped = false;
+        TouchPosition = Vector2.zero;
     }
 
     void OnUpdateTouchStatus(bool flag)
     {
-        isTouching = flag;
         touchPointObjMesh.enabled = flag;
-    }
-
-    void OnUpdateOverlapStatus(bool flag)
-    {
-        isOverlapped = flag;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -146,10 +156,10 @@ public class TouchDetection : MonoBehaviour
         if (otherFinger == null || otherFinger.fingertipType != targetFingerType)
             return;
 
-        UpdateTouchStatus(isEntry);
+        IsTouching = isEntry;
 
         // Calculate the position of touch point
-        if (isTouching)
+        if (IsTouching)
         {
             // Set the para for the Ray
             ray.origin = other.bounds.center;
@@ -160,21 +170,20 @@ public class TouchDetection : MonoBehaviour
             touchPointObj.position = hit.point;
 
             // Set overlapped true if the distance between two touch point is too large
-            UpdateOverlapStatus(
+            IsOverlapped =
                 Vector3.Distance(
                     touchPointObj.position,
-                    otherFinger.touchPointObj.position) > 1e-3);
+                    otherFinger.touchPointObj.position) > 1e-3;
 
             // Calculate the touch point
-            if (!isOverlapped)
+            if (!IsOverlapped)
             {
-                //touchPosition = CalcTouchPosition(other);
-                UpdateTouchPosition(CalcTouchPosition(other));
+                TouchPosition = CalcTouchPosition(other);
             }
         }
-        else if (!isTouching)
+        else if (!IsTouching)
         {
-            UpdateOverlapStatus(false);
+            IsOverlapped = false;
         }
     }
 

@@ -11,8 +11,8 @@ public class FolderIndicatorActions : Singleton<FolderIndicatorActions>
     void Start()
     {
         folderIndicator = transform.GetComponent<Text>();
-        ScreenShotManager.Instance.ChangeFolderName += UpdateText;
-        // UpdateText(ScreenShotManager.Instance.foldername);
+        ScreenShotManager.Instance.FolderNameChangePublisher += UpdateText;
+        UpdateText(ScreenShotManager.Instance.FolderName);
     }
 
     public void UpdateText(string foldername)

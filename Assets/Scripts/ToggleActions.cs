@@ -28,20 +28,14 @@ public class ToggleActions : MonoBehaviour
     {
         toggle = transform.GetComponent<Toggle>();
         TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
-        foreach (var finger in fingeres)
-        {
-            if (finger.fingertipType == Finger.thumb)
-            {
-                thumb = finger;
-            }
-        }
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
         switch (flagType)
         {
             case FlagType.isTouched:
-                thumb.UpdateTouchStatus += ChangeToggleState;
+                thumb.TouchStatusUpdatePublisher += ChangeToggleState;
                 break;
             case FlagType.isOverlapped:
-                thumb.UpdateOverlapStatus += ChangeToggleState;
+                thumb.OverlapStatusUpdatePublisher += ChangeToggleState;
                 break;
             default:
                 break;

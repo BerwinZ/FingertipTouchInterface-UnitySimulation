@@ -23,6 +23,24 @@ namespace Common
     }
     #endregion FingerAndJointsEnum
 
+    #region FindScripts
+    public class ScriptFind
+    {
+        public static TouchDetection FindTouchDetection(Finger fingertype)
+        {
+            TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
+            foreach (var finger in fingeres)
+            {
+                if (finger.fingertipType == fingertype)
+                {
+                    return finger;
+                }
+            }
+            return null;
+        }
+    }
+    #endregion FindScripts
+
     #region FileFolderDialog
     /// <summary>
     /// File Dialog

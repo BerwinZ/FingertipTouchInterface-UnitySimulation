@@ -30,8 +30,8 @@ public class JointManager : Singleton<JointManager>
     Transform[] thumbJoints;
     Dictionary<Transform, Vector3> defaultAngles;
 
-    public TouchDetection thumb {get; set;}
-    public TouchDetection index {get; set;}
+    TouchDetection thumb;
+    TouchDetection index;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +54,10 @@ public class JointManager : Singleton<JointManager>
         {
             defaultAngles[item] = item.localEulerAngles;
         }
+
+        // Get thumb and index finger
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+        index = ScriptFind.FindTouchDetection(Finger.index);
     }
 
     void Update()
@@ -134,10 +138,10 @@ public class JointManager : Singleton<JointManager>
             alpha1.ToString("F2") + "," +
             alpha2.ToString("F2") + "," +
             beta.ToString("F2") + "," +
-            thumb.touchPosition.x.ToString("F2") + "," +
-            thumb.touchPosition.y.ToString("F2") + "," +
-            index.touchPosition.x.ToString("F2") + "," +
-            index.touchPosition.y.ToString("F2") + "," +
+            thumb.TouchPosition.x.ToString("F2") + "," +
+            thumb.TouchPosition.y.ToString("F2") + "," +
+            index.TouchPosition.x.ToString("F2") + "," +
+            index.TouchPosition.y.ToString("F2") + "," +
             imgName;
         return data;
     }

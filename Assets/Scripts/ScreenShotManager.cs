@@ -23,19 +23,31 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     public GameObject datasetMenu;
 
     Text debugText;
-    string foldername;
+    
     public delegate void FolderNameChangeHandler(string str);
-    public event FolderNameChangeHandler ChangeFolderName;
+    public event FolderNameChangeHandler FolderNameChangePublisher;
+    string foldername;
+    public string FolderName
+    {
+        get { return foldername; }
+        private set
+        {
+            foldername = value;
+            FolderNameChangePublisher?.Invoke(value);
+        }
+    }
 
+    TouchDetection thumb;
 
     // Start is called before the first frame update
     void Start()
     {
         debugText = GameObject.Find("DebugText").GetComponent<Text>();
-        ChangeFolderName += OnChangeFolderName;
-        ChangeFolderName("D:/Desktop/UnityData");
-        // ChangeFolderName(Application.dataPath + "/Screenshots");
+        FolderName = "D:/Desktop/UnityData";
+        // FolderName = Application.dataPath + "/Screenshots";
         datasetMenu.SetActive(false);
+
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
     }
 
     // Update is called once per frame
@@ -167,7 +179,7 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
                                 yield return new WaitForSeconds(0.05f);
 
                                 // If could save, save image here
-                                if (JointManager.Instance.thumb.isTouching && !JointManager.Instance.thumb.isOverlapped)
+                                if (thumb.IsTouching && !thumb.IsOverlapped)
                                 {
                                     validCnt++;
 
@@ -203,8 +215,8 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
     public void SaveSingleImage()
     {
         // Check whether can save this img currently
-        if (JointManager.Instance.thumb.isTouching == false ||
-           JointManager.Instance.thumb.isOverlapped == true)
+        if (thumb.IsTouching == false ||
+            thumb.IsOverlapped == true)
         {
             WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
             return;
@@ -283,14 +295,9 @@ public class ScreenShotManager : Singleton<ScreenShotManager>
             fullDirPath = fullDirPath.Substring(0, fullDirPath.IndexOf('\0'));
             if (fullDirPath != "")
             {
-                OnChangeFolderName(fullDirPath);
+                FolderName = fullDirPath;
             }
         }
-    }
-
-    void OnChangeFolderName(string str)
-    {
-        foldername = str;
     }
 
     /// <summary>
