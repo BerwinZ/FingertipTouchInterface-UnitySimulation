@@ -5644,7 +5644,6 @@ GameObject:
   - component: {fileID: 890067059}
   - component: {fileID: 890067058}
   - component: {fileID: 890067057}
-  - component: {fileID: 890067060}
   - component: {fileID: 890067061}
   m_Layer: 0
   m_Name: thumb_collider
@@ -5729,22 +5728,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 890067055}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &890067060
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 890067055}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!114 &890067061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8055,7 +8038,7 @@ GameObject:
   - component: {fileID: 1151279920}
   - component: {fileID: 1151279919}
   m_Layer: 5
-  m_Name: Info
+  m_Name: InfoUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12736,7 +12719,6 @@ GameObject:
   - component: {fileID: 1915060428}
   - component: {fileID: 1915060427}
   - component: {fileID: 1915060426}
-  - component: {fileID: 1915060429}
   - component: {fileID: 1915060430}
   m_Layer: 0
   m_Name: index_collider
@@ -12821,22 +12803,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1915060424}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &1915060429
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915060424}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!114 &1915060430
 MonoBehaviour:
   m_ObjectHideFlags: 0

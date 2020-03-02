@@ -26,6 +26,7 @@ public class JointManager : Singleton<JointManager>
     [SerializeField, Range(-20, 20)]
     float beta = 0;
 
+    [Header("Debug Chocie")]
     public bool controlInEditor = false;
 
     Transform[] indexFingerJoints;
@@ -65,13 +66,43 @@ public class JointManager : Singleton<JointManager>
 
     void Update()
     {
-        if(controlInEditor)
+        if (controlInEditor)
         {
-            SetJointsPara();
+            UpdateObjTransform();
         }
     }
 
-    public void UpdateParaValue(DOF joint, float value)
+    public float GetDOFValue(DOF joint)
+    {
+        switch (joint)
+        {
+            case DOF.alpha1:
+                return alpha1;
+
+            case DOF.alpha2:
+                return alpha2;
+                
+            case DOF.beta:
+                return beta;
+                
+            case DOF.gamma1:
+                return gamma1;
+                
+            case DOF.gamma2:
+                return gamma2;
+                
+            case DOF.gamma3:
+                return gamma3;
+                
+            default:
+                return 0;
+        }
+    }
+
+    /// <summary>
+    /// Set the parameters for the joint
+    /// </summary>
+    public void UpdateDOFValue(DOF joint, float value)
     {
         switch (joint)
         {
@@ -96,14 +127,12 @@ public class JointManager : Singleton<JointManager>
             default:
                 break;
         }
-        SetJointsPara();
+        UpdateObjTransform();
     }
 
 
-    /// <summary>
-    /// Set the parameters for the joint
-    /// </summary>
-    void SetJointsPara()
+
+    void UpdateObjTransform()
     {
         float[] gama = new float[3] { gamma1, gamma2, gamma3 };
 
@@ -118,14 +147,14 @@ public class JointManager : Singleton<JointManager>
         JointUpdatePublisher?.Invoke();
     }
 
-#region ForDataSaveInDisk
+    #region ForDataSaveInDisk
     /// <summary>
     /// Generate the header line for the .csv file
     /// </summary>
     /// <returns></returns>
     public string GenerateStreamHeader()
     {
-        string header = "Gamma1," + "Gamma2," + "Gamma3," + "Alpha1,"  + "Alpha2," + "Beta," + "thumb_x," + "thumb_y," + "index_x," + "index_y," + "ImgName";
+        string header = "Gamma1," + "Gamma2," + "Gamma3," + "Alpha1," + "Alpha2," + "Beta," + "thumb_x," + "thumb_y," + "index_x," + "index_y," + "ImgName";
         return header;
     }
 
@@ -136,8 +165,8 @@ public class JointManager : Singleton<JointManager>
     /// <returns></returns>
     public string GenerateStreamData(string imgName)
     {
-        string data = 
-            gamma1.ToString("F2") + "," + 
+        string data =
+            gamma1.ToString("F2") + "," +
             gamma2.ToString("F2") + "," +
             gamma3.ToString("F2") + "," +
             alpha1.ToString("F2") + "," +
@@ -150,5 +179,5 @@ public class JointManager : Singleton<JointManager>
             imgName;
         return data;
     }
-#endregion ForDataSaveInDisk
+    #endregion ForDataSaveInDisk
 }

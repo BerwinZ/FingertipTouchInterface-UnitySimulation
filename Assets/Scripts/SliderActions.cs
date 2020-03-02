@@ -21,12 +21,44 @@ public class SliderActions : MonoBehaviour
     {
         slider = transform.GetComponent<Slider>();
         text = transform.Find("Number").GetComponent<Text>();
-        slider.onValueChanged.AddListener(delegate { SendDataToJoint(); });
+
+        ScreenshotManager.Instance.DatasetPanelPublisher += OnDatasetPanelOpen;
+        OnDatasetPanelOpen(false);
     }
 
-    public void SendDataToJoint()
+    void OnDatasetPanelOpen(bool flag)
     {
-        JointManager.Instance.UpdateParaValue(handleType, slider.value);
+        if (!flag)
+        {
+            JointManager.Instance.JointUpdatePublisher -= UpdateValue;
+
+            slider.onValueChanged.RemoveAllListeners();
+            slider.onValueChanged.AddListener(delegate { SendDataToJoint(); });
+            slider.onValueChanged.AddListener(delegate { UpdateText(); });
+            
+        }
+        else
+        {
+            slider.onValueChanged.RemoveAllListeners();
+            slider.onValueChanged.AddListener(delegate { UpdateText(); });
+
+            JointManager.Instance.JointUpdatePublisher += UpdateValue;
+        }
+    }
+
+    void SendDataToJoint()
+    {
+        JointManager.Instance.UpdateDOFValue(handleType, slider.value);
+    }
+
+    void UpdateText()
+    {
         text.text = slider.value.ToString("#0.0");
     }
+
+    void UpdateValue()
+    {
+        slider.value = JointManager.Instance.GetDOFValue(handleType);
+    }
+
 }

@@ -8,6 +8,9 @@ using Common;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 
+
+public delegate void FolderNameChangeHandler(string str);
+public delegate void DatasetPanelHandler(bool flag);
 /// <summary>
 /// Handle the user's input, including
 /// 1. Save single image
@@ -24,9 +27,9 @@ public class ScreenshotManager : Singleton<ScreenshotManager>
     [Header("Dataset Menu")]
     public GameObject datasetMenu;
 
+    public event DatasetPanelHandler DatasetPanelPublisher;
     Text debugText;
     
-    public delegate void FolderNameChangeHandler(string str);
     public event FolderNameChangeHandler FolderNameChangePublisher;
     string foldername;
     public string FolderName
@@ -68,6 +71,7 @@ public class ScreenshotManager : Singleton<ScreenshotManager>
     public void OpenDatasetSettings()
     {
         datasetMenu.SetActive(true);
+        DatasetPanelPublisher?.Invoke(true);
     }
 
     /// <summary>
@@ -84,6 +88,7 @@ public class ScreenshotManager : Singleton<ScreenshotManager>
         DatasetManager.Instance.UpdateCurrentSampleCnt(0);
         // DatasetManager.Instance.UpdateTotalSampleCnt(0);
         datasetMenu.SetActive(false);
+        DatasetPanelPublisher?.Invoke(false);
     }
 
     /// <summary>
@@ -143,37 +148,37 @@ public class ScreenshotManager : Singleton<ScreenshotManager>
         gamma1 <= para["gamma1"]["max"];
         gamma1 += Mathf.Max(para["gamma1"]["step"], 1e-8f))
         {
-            JointManager.Instance.UpdateParaValue(DOF.gamma1, gamma1);
+            JointManager.Instance.UpdateDOFValue(DOF.gamma1, gamma1);
 
             for (float gamma2 = para["gamma2"]["min"];
             gamma2 <= para["gamma2"]["max"];
             gamma2 += Mathf.Max(para["gamma2"]["step"], 1e-8f))
             {
-                JointManager.Instance.UpdateParaValue(DOF.gamma2, gamma2);
+                JointManager.Instance.UpdateDOFValue(DOF.gamma2, gamma2);
 
                 for (float gamma3 = para["gamma3"]["min"];
                 gamma3 <= para["gamma3"]["max"];
                 gamma3 += Mathf.Max(para["gamma3"]["step"], 1e-8f))
                 {
-                    JointManager.Instance.UpdateParaValue(DOF.gamma3, gamma3);
+                    JointManager.Instance.UpdateDOFValue(DOF.gamma3, gamma3);
 
                     for (float alpha1 = para["alpha1"]["min"];
                     alpha1 <= para["alpha1"]["max"];
                     alpha1 += Mathf.Max(para["alpha1"]["step"], 1e-8f))
                     {
-                        JointManager.Instance.UpdateParaValue(DOF.alpha1, alpha1);
+                        JointManager.Instance.UpdateDOFValue(DOF.alpha1, alpha1);
 
                         for (float alpha2 = para["alpha2"]["min"];
                         alpha2 <= para["alpha2"]["max"];
                         alpha2 += Mathf.Max(para["alpha2"]["step"], 1e-8f))
                         {
-                            JointManager.Instance.UpdateParaValue(DOF.alpha2, alpha2);
+                            JointManager.Instance.UpdateDOFValue(DOF.alpha2, alpha2);
 
                             for (float beta = para["beta"]["min"];
                             beta <= para["beta"]["max"];
                             beta += Mathf.Max(para["beta"]["step"], 1e-8f))
                             {
-                                JointManager.Instance.UpdateParaValue(DOF.beta, beta);
+                                JointManager.Instance.UpdateDOFValue(DOF.beta, beta);
 
                                 currentCnt++;
                                 DatasetManager.Instance.UpdateCurrentSampleCnt(currentCnt);
