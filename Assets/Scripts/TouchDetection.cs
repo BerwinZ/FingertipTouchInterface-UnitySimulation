@@ -148,6 +148,9 @@ public class TouchDetection : MonoBehaviour
     Vector2 worldTouchMM = Vector2.zero;
     #endregion ParaforAccurateTouchDetection
 
+    /// <summary>
+    /// Detect whether this finger is colliding with the other collider
+    /// </summary>
     void DetectTouching()
     {
         hitColliders = Physics.OverlapSphere(
@@ -163,6 +166,11 @@ public class TouchDetection : MonoBehaviour
         AccurateDetect(otherCollider, flag);
     }
 
+    /// <summary>
+    /// Accurate detecting the touch point and set other flags
+    /// </summary>
+    /// <param name="other"></param>
+    /// <param name="isEntry"></param>
     void AccurateDetect(Collider other, bool isEntry)
     {
         if (other == null)

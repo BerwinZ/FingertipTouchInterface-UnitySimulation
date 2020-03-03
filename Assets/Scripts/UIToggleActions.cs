@@ -7,7 +7,7 @@ using Common;
 /// <summary>
 /// Get flags from JointManger
 /// </summary>
-public class ToggleActions : MonoBehaviour
+public class UIToggleActions : MonoBehaviour
 {
     public enum FlagType
     {

@@ -68,7 +68,7 @@ public class JointManager : Singleton<JointManager>
     {
         if (controlInEditor)
         {
-            UpdateObjTransform();
+            UpdateJointObjTransform();
         }
     }
 
@@ -127,12 +127,10 @@ public class JointManager : Singleton<JointManager>
             default:
                 break;
         }
-        UpdateObjTransform();
+        UpdateJointObjTransform();
     }
 
-
-
-    void UpdateObjTransform()
+    void UpdateJointObjTransform()
     {
         float[] gama = new float[3] { gamma1, gamma2, gamma3 };
 
@@ -154,7 +152,18 @@ public class JointManager : Singleton<JointManager>
     /// <returns></returns>
     public string GenerateStreamHeader()
     {
-        string header = "Gamma1," + "Gamma2," + "Gamma3," + "Alpha1," + "Alpha2," + "Beta," + "thumb_x," + "thumb_y," + "index_x," + "index_y," + "ImgName";
+        string header = 
+                "Gamma1," + 
+                "Gamma2," + 
+                "Gamma3," + 
+                "Alpha1," + 
+                "Alpha2," + 
+                "Beta," + 
+                "thumb_x," + 
+                "thumb_y," + 
+                "index_x," + 
+                "index_y," + 
+                "ImgName";
         return header;
     }
 

@@ -3,23 +3,36 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System;
 
+/// <summary>
+/// Includes some common functions used in this projection
+/// 1. Enum DOF, Finger
+/// 2. Customized script finding class
+/// 3. Open file / folder dialog in windows
+/// </summary>
 namespace Common
 {
     #region FingerAndJointsEnum
     public enum DOF
     {
-        alpha1,
-        alpha2,
-        beta,
         gamma1,
         gamma2,
         gamma3,
+        alpha1,
+        alpha2,
+        beta,
     }
 
     public enum Finger
     {
         thumb,
         index,
+    }
+
+    public enum DataRange
+    {
+        min,
+        max,
+        step,
     }
     #endregion FingerAndJointsEnum
 

@@ -1,160 +1,383 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.UI;
+using System.IO;
 using Common;
 using System;
+using System.Runtime.Serialization.Formatters.Binary;
 
+
+public delegate void FolderNameChangeHandler(string str);
+public delegate void DatasetPanelHandler(bool flag);
+/// <summary>
+/// Handle the user's input, including
+/// 1. Save single image
+/// 2. Save serveral images according to the settings from dataset panel
+/// 3. Change the folder to save images
+/// 4. Exit the application
+/// </summary>
 public class DatasetManager : Singleton<DatasetManager>
 {
-    Transform[] itemObjects;
+    [Header("Screen Shot Settings")]
+    public Camera cameraToTakeShot = null;
+    public bool sameSizeWithWindow = false;
 
-    string[] itemsHeader = { "gamma1", "gamma2", "gamma3", "alpha1", "alpha2", "beta" };
+    [Header("Dataset Menu")]
+    public GameObject datasetPanel;
 
-    string[] singleItemHeader = { "min", "max", "step" };
+    public event DatasetPanelHandler DatasetPanelPublisher;
 
-    Text cntIndicator;
-    long totalCnt;
-    long currentCnt;
-    Scrollbar percentageIndicator;
-    float percentage;
+
+    public event FolderNameChangeHandler FolderNameChangePublisher;
+    string foldername;
+    public string FolderName
+    {
+        get { return foldername; }
+        private set
+        {
+            foldername = value;
+            FolderNameChangePublisher?.Invoke(value);
+        }
+    }
+
+    TouchDetection thumb;
+
+    Text debugText;
 
     // Start is called before the first frame update
     void Start()
     {
-        itemObjects = new Transform[6];
-        for (int i = 0; i < 6; i++)
-        {
-            itemObjects[i] = transform.GetChild(1).GetChild(i);
-        }
-        cntIndicator = transform.GetChild(1).Find("Count").GetComponent<Text>();
-        percentageIndicator = transform.GetChild(1).Find("Percentage").GetComponent<Scrollbar>();
+        debugText = GameObject.Find("DebugText").GetComponent<Text>();
+        FolderName = "D:/Desktop/UnityData";
+        // FolderName = Application.dataPath + "/Screenshots";
+        datasetPanel.SetActive(false);
 
-        totalCnt = 0;
-        currentCnt = 0;
-        percentage = 0.0f;
-        percentageIndicator.size = 0.0f;
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ExitApplication();
+        }
+
     }
 
     /// <summary>
-    /// Test function triggried from UI button
+    /// Open the dataset dialog
     /// </summary>
-    public void PackDataBtn()
+    public void OpenDatasetSettings()
     {
-        if (PackData(out Dictionary<string, Dictionary<string, float>> data))
-        {
-            ShowItem(data);
-        }
+        datasetPanel.SetActive(true);
+        DatasetPanelPublisher?.Invoke(true);
     }
 
     /// <summary>
-    /// Pack data, store it in class and return a data
+    /// Close the dataset dialog or suspend the generating process
     /// </summary>
-    /// <param name="Dictionary<string"></param>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    public bool PackData(out Dictionary<string, Dictionary<string, float>> items)
+    public void CancelSettingsOrGenerating()
     {
-        items = new Dictionary<string, Dictionary<string, float>>();
+        StopAllCoroutines();
+        commonWriter?.Flush();
+        commonWriter?.Close();
+        DatasetPanel.Instance.UpdateCurrentSampleCnt(0);
+        // DatasetPanel.Instance.UpdateTotalSampleCnt(0);
 
-        if (!CheckValidation(out string msg))
-        {
-            WinFormTools.MessageBox(IntPtr.Zero, msg, "Invalid Input", 0);
-            return false;
-        }
-
-        for (int i = 0; i < 6; i++)
-        {
-            Dictionary<string, float> singleItem = new Dictionary<string, float>();
-            for (int j = 0; j < 3; j++)
-            {
-                string text = itemObjects[i].GetChild(j + 4).GetComponent<InputField>().text;
-                float value;
-                float.TryParse(text, out value);
-                singleItem[singleItemHeader[j]] = value;
-            }
-            items[itemsHeader[i]] = singleItem;
-        }
-        return true;
+        datasetPanel.SetActive(false);
+        DatasetPanelPublisher?.Invoke(false);
     }
 
     /// <summary>
-    /// Check whether the data obeys the rules
+    /// Start to generate dataset
     /// </summary>
-    /// <param name="msg"></param>
-    /// <returns></returns>
-    bool CheckValidation(out string msg)
+    public void StartGenatingDataset()
     {
-        msg = "";
-        for (int i = 0; i < 6; i++)
+        Dictionary<DOF, Dictionary<DataRange, float>> datasetPara = new Dictionary<DOF, Dictionary<DataRange, float>>();
+
+        if (DatasetPanel.Instance.PackData(out datasetPara))
         {
-            List<float> list = new List<float>();
-            for (int j = 0; j < 3; j++)
+            StartCoroutine(SaveImages(datasetPara));
+        }
+
+    }
+
+    StreamWriter commonWriter;
+    /// <summary>
+    /// Iterate the parameters and save image and data to disk
+    /// </summary>
+    IEnumerator SaveImages(Dictionary<DOF, Dictionary<DataRange, float>> para)
+    {
+        Debug.Log("Start Generaing...");
+
+        // Check whether the folder exists
+        if (!Directory.Exists(foldername))
+        {
+            Directory.CreateDirectory(foldername);
+        }
+
+        // Prepare the data file
+        string dataName = foldername + "/data.csv";
+        if (File.Exists(dataName))
+        {
+            commonWriter = new StreamWriter(dataName, true);
+        }
+        else
+        {
+            commonWriter = new StreamWriter(dataName);
+            commonWriter.WriteLine(JointManager.Instance.GenerateStreamHeader());
+        }
+
+        // Calculate the total number
+        long totalCnt = 1;
+        foreach(var joint in para.Keys)
+        {
+            totalCnt *= (para[joint][DataRange.step] == 0) ? 
+                1 : Convert.ToInt64((para[joint][DataRange.max] - para[joint][DataRange.min]) / para[joint][DataRange.step]);
+        }
+        DatasetPanel.Instance.UpdateTotalSampleCnt(totalCnt);
+
+        // Start iteration
+        long currentCnt = 0;
+        long validCnt = 0;
+        for (float gamma1 = para[DOF.gamma1][DataRange.min];
+        gamma1 <= para[DOF.gamma1][DataRange.max];
+        gamma1 += Mathf.Max(para[DOF.gamma1][DataRange.step], 1e-8f))
+        {
+            JointManager.Instance.UpdateDOFValue(DOF.gamma1, gamma1);
+
+            for (float gamma2 = para[DOF.gamma2][DataRange.min];
+            gamma2 <= para[DOF.gamma2][DataRange.max];
+            gamma2 += Mathf.Max(para[DOF.gamma2][DataRange.step], 1e-8f))
             {
-                string text = itemObjects[i].GetChild(j + 4).GetComponent<InputField>().text;
-                float value;
-                float.TryParse(text, out value);
-                list.Add(value);
-            }
-            if (list[0] > list[1])
-            {
-                msg = itemsHeader[i] + ": The min value is larger than the max value";
-                return false;
-            }
-            if (list[2] < 0)
-            {
-                msg = itemsHeader[i] + ": The step is not larger than 0";
-                return false;
-            }
-            if (list[2] == 0 && list[0] != list[1])
-            {
-                msg = itemsHeader[i] + ": The step cannot be 0";
-                return false;
-            }
-            if (list[2] < 1e-8f && list[0] != list[1])
-            {
-                msg = itemsHeader[i] + ": The step is too small";
-                return false;
+                JointManager.Instance.UpdateDOFValue(DOF.gamma2, gamma2);
+
+                for (float gamma3 = para[DOF.gamma3][DataRange.min];
+                gamma3 <= para[DOF.gamma3][DataRange.max];
+                gamma3 += Mathf.Max(para[DOF.gamma3][DataRange.step], 1e-8f))
+                {
+                    JointManager.Instance.UpdateDOFValue(DOF.gamma3, gamma3);
+
+                    for (float alpha1 = para[DOF.alpha1][DataRange.min];
+                    alpha1 <= para[DOF.alpha1][DataRange.max];
+                    alpha1 += Mathf.Max(para[DOF.alpha1][DataRange.step], 1e-8f))
+                    {
+                        JointManager.Instance.UpdateDOFValue(DOF.alpha1, alpha1);
+
+                        for (float alpha2 = para[DOF.alpha2][DataRange.min];
+                        alpha2 <= para[DOF.alpha2][DataRange.max];
+                        alpha2 += Mathf.Max(para[DOF.alpha2][DataRange.step], 1e-8f))
+                        {
+                            JointManager.Instance.UpdateDOFValue(DOF.alpha2, alpha2);
+
+                            for (float beta = para[DOF.beta][DataRange.min];
+                            beta <= para[DOF.beta][DataRange.max];
+                            beta += Mathf.Max(para[DOF.beta][DataRange.step], 1e-8f))
+                            {
+                                JointManager.Instance.UpdateDOFValue(DOF.beta, beta);
+
+                                currentCnt++;
+                                DatasetPanel.Instance.UpdateCurrentSampleCnt(currentCnt);
+
+                                // yield return new WaitForSeconds(0.05f);
+                                yield return null;
+
+                                // If could save, save image here
+                                if (thumb.IsTouching && !thumb.IsOverlapped)
+                                {
+                                    validCnt++;
+
+                                    // Get a unique image name
+                                    string imgName = GenerateImgName();
+                                    // Save the image into disk
+                                    System.IO.File.WriteAllBytes(
+                                            foldername + '/' + imgName,
+                                            CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+                                    // Save para data
+                                    commonWriter.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        return true;
+
+        commonWriter.Flush();
+        commonWriter.Close();
+        commonWriter = null;
+
+        WinFormTools.MessageBox(IntPtr.Zero, "Valid Image: " + validCnt, "Finish", 0);
+
+        Debug.Log("Finish Generaing!");
+
     }
 
     /// <summary>
-    /// Function to show the items data
+    /// Save a single image and store the para in the .csv file
     /// </summary>
-    void ShowItem(Dictionary<string, Dictionary<string, float>> items)
+    public void SaveSingleImage()
     {
-        foreach (var singleItem in items)
+        // Check whether can save this img currently
+        if (thumb.IsTouching == false ||
+            thumb.IsOverlapped == true)
         {
-            string text = singleItem.Key;
-            foreach (var item in singleItem.Value)
-            {
-                text += " " + item.Key + "=" + item.Value;
-            }
+            WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
+            return;
+        }
+
+        // Check whether the folder exists
+        if (!Directory.Exists(foldername))
+        {
+            Directory.CreateDirectory(foldername);
+        }
+
+        // Get a unique image name
+        string imgName = GenerateImgName();
+
+        // Save the image into disk
+        System.IO.File.WriteAllBytes(
+                foldername + '/' + imgName,
+                CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+
+        // Save the data into disk
+        string dataName = foldername + "/data.csv";
+        StreamWriter writer;
+        if (File.Exists(dataName))
+        {
+            writer = new StreamWriter(dataName, true);
+        }
+        else
+        {
+            writer = new StreamWriter(dataName);
+            writer.WriteLine(JointManager.Instance.GenerateStreamHeader());
+        }
+        writer.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+        writer.Flush();
+        writer.Close();
+
+        WinFormTools.MessageBox(IntPtr.Zero, "Saved Image!", "Finish", 0);
+        // LoadCSVFile(dataName);
+    }
+
+    /// <summary>
+    /// Load .csv file
+    /// </summary>
+    /// <param name="fileName"></param>
+    void LoadCSVFile(string fileName)
+    {
+        StreamReader reader = new StreamReader(fileName);
+
+        string[] texts = reader.ReadToEnd().Split("\n"[0]);
+        reader.Close();
+
+        foreach (var text in texts)
+        {
             Debug.Log(text);
         }
     }
 
     /// <summary>
-    /// Set the total cnt of sample
+    /// Change the folder to store images
     /// </summary>
-    /// <param name="value"></param>
-    public void UpdateTotalSampleCnt(long value)
+    public void ChangeFolderPath()
     {
-        totalCnt = value;
-        cntIndicator.text = String.Format("Current: {0}  Total: {1}", currentCnt, totalCnt);
+        DirDialog dialog = new DirDialog();
+        // dialog.pidlRoot = new IntPtr(1941411595568);
+        dialog.pszDisplayName = new string(new char[2000]);
+        dialog.lpszTitle = "Open Project";
+        dialog.ulFlags = 0x00000040 | 0x00000010;
+
+        IntPtr pidlPtr = OpenBroswerDialog.SHBrowseForFolder(dialog);
+
+        char[] charArray = new char[2000];
+        for (int i = 0; i < 2000; i++)
+            charArray[i] = '\0';
+
+        if (OpenBroswerDialog.SHGetPathFromIDList(pidlPtr, charArray))
+        {
+            string fullDirPath = new String(charArray);
+            fullDirPath = fullDirPath.Substring(0, fullDirPath.IndexOf('\0'));
+            if (fullDirPath != "")
+            {
+                FolderName = fullDirPath;
+            }
+        }
     }
 
     /// <summary>
-    /// Set the current cnt of sample
+    /// Generate a unique PNG image name with timestamp
     /// </summary>
-    /// <param name="value"></param>
-    public void UpdateCurrentSampleCnt(long value)
+    /// <returns></returns>
+    string GenerateImgName()
     {
-        currentCnt = value;
-        percentage = (float)currentCnt / (float)totalCnt;
-        cntIndicator.text = String.Format("Current: {0}  Total: {1}", currentCnt, totalCnt);
-        percentageIndicator.size = percentage;
+        string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
+        filename = filename.Replace('/', '_');
+        filename = filename.Replace(' ', '_');
+        filename = filename.Replace(':', '_');
+        filename = filename.Replace('.', '_');
+        filename += ".png";
+        return filename;
+    }
+
+    /// <summary>
+    /// Capture the screen of the view of given camera and return the bytes
+    /// </summary>
+    /// <param name="cam"></param>
+    /// <returns></returns>
+    byte[] CaptureScreen(Camera cam, bool isFullSize)
+    {
+        // Create a rendering texture
+        RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0);
+
+        // Assign the rendering texture to the camera
+        cam.targetTexture = rt;
+        if (isFullSize)
+        {
+            Rect oldRect = cam.rect;
+            cam.rect = new Rect(0, 0, 1, 1);
+            cam.Render();
+            cam.rect = oldRect;
+        }
+        else
+        {
+            cam.Render();
+        }
+        RenderTexture.active = rt;
+
+        // Create a texture 2D to store the image
+        int imageWidth = isFullSize ? Screen.width : (int)(Screen.width * cam.rect.width);
+        int imageHeight = isFullSize ? Screen.height : (int)(Screen.height * cam.rect.height);
+        Texture2D screenShot = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
+
+        // Read pixels from rendering texture (rather than the screen) to texture 2D
+        // Note. the source coordinate is the image coordinate ((0,0) is in top-right) rather than the pixel coordinate ((0,0) is in the bottom-left)
+        int imagePosX = isFullSize ? 0 : (int)(Screen.width * cam.rect.x);
+        int imagePosY = isFullSize ? 0 : (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
+        Rect rect = new Rect(imagePosX, imagePosY, imageWidth, imageHeight);
+        screenShot.ReadPixels(rect, 0, 0);
+        screenShot.Apply();
+
+        // Unassign the rendering texture from the camera
+        cam.targetTexture = null;
+        RenderTexture.active = null;
+        Destroy(rt);
+
+        return screenShot.EncodeToPNG();
+    }
+
+    /// <summary>
+    /// Exit the application
+    /// </summary>
+    void ExitApplication()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

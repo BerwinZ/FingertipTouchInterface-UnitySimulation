@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FolderIndicatorActions : Singleton<FolderIndicatorActions>
+public class UIFolderPathIndicator : Singleton<UIFolderPathIndicator>
 {
     Text folderIndicator;
 
@@ -11,8 +11,8 @@ public class FolderIndicatorActions : Singleton<FolderIndicatorActions>
     void Start()
     {
         folderIndicator = transform.GetComponent<Text>();
-        ScreenshotManager.Instance.FolderNameChangePublisher += UpdateText;
-        UpdateText(ScreenshotManager.Instance.FolderName);
+        DatasetManager.Instance.FolderNameChangePublisher += UpdateText;
+        UpdateText(DatasetManager.Instance.FolderName);
     }
 
     public void UpdateText(string foldername)

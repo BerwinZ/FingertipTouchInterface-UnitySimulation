@@ -7,7 +7,7 @@ using Common;
 /// <summary>
 /// Send slider data to the JointManager.
 /// </summary>
-public class SliderActions : MonoBehaviour
+public class UISliderActions : MonoBehaviour
 {
 
     [SerializeField]
@@ -22,12 +22,13 @@ public class SliderActions : MonoBehaviour
         slider = transform.GetComponent<Slider>();
         text = transform.Find("Number").GetComponent<Text>();
 
-        ScreenshotManager.Instance.DatasetPanelPublisher += OnDatasetPanelOpen;
+        DatasetManager.Instance.DatasetPanelPublisher += OnDatasetPanelOpen;
         OnDatasetPanelOpen(false);
     }
 
     void OnDatasetPanelOpen(bool flag)
     {
+        // When the dataset panel doesn't open, send data to the joint
         if (!flag)
         {
             JointManager.Instance.JointUpdatePublisher -= UpdateValue;
@@ -37,7 +38,7 @@ public class SliderActions : MonoBehaviour
             slider.onValueChanged.AddListener(delegate { UpdateText(); });
             
         }
-        else
+        else // When the dataset panel opens, substribe the joint update event
         {
             slider.onValueChanged.RemoveAllListeners();
             slider.onValueChanged.AddListener(delegate { UpdateText(); });

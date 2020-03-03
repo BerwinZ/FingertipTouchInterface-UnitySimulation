@@ -1051,7 +1051,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: a2
+  m_Text: r2
 --- !u!222 &130579810
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1999,7 +1999,7 @@ GameObject:
   - component: {fileID: 336988538}
   - component: {fileID: 336988537}
   m_Layer: 5
-  m_Name: FolderChoose
+  m_Name: FolderChooseBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2410,7 +2410,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: r2
+  m_Text: a2
 --- !u!222 &416028850
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5285,7 +5285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraToTakeShot: {fileID: 963194227}
   sameSizeWithWindow: 1
-  datasetMenu: {fileID: 1581279208}
+  datasetPanel: {fileID: 1581279208}
 --- !u!4 &837565847
 Transform:
   m_ObjectHideFlags: 0
@@ -5999,7 +5999,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: r3
+  m_Text: b
 --- !u!222 &930874597
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6679,7 +6679,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: a1
+  m_Text: r1
 --- !u!222 &1034870858
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7279,7 +7279,7 @@ GameObject:
   - component: {fileID: 1103039531}
   - component: {fileID: 1103039530}
   m_Layer: 5
-  m_Name: SaveImages
+  m_Name: SeveralSaveBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8016,7 +8016,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: b
+  m_Text: r3
 --- !u!222 &1144603590
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8226,7 +8226,7 @@ GameObject:
   - component: {fileID: 1156015321}
   - component: {fileID: 1156015320}
   m_Layer: 5
-  m_Name: SaveSingleImage
+  m_Name: SingleSaveBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10685,7 +10685,7 @@ GameObject:
   - component: {fileID: 1581279209}
   - component: {fileID: 1581279213}
   m_Layer: 5
-  m_Name: DatasetSettings
+  m_Name: DatasetPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13840,7 +13840,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: r1
+  m_Text: a1
 --- !u!222 &2055541153
 CanvasRenderer:
   m_ObjectHideFlags: 0
