@@ -23,17 +23,15 @@ public class TouchDetection : MonoBehaviour
 
     Collider m_Collider;
 
-
-
     public event StatusUpdateHandler TouchStatusUpdatePublisher;
     // Whether this finger is isTouching by another
     bool isTouching;
     public bool IsTouching
     {
-        get { return isTouching; }
+        get => isTouching;
         private set
         {
-            isTouching = value;
+            isTouching = value; 
             TouchStatusUpdatePublisher?.Invoke(value);
         }
     }
@@ -43,7 +41,7 @@ public class TouchDetection : MonoBehaviour
     bool isOverlapped;
     public bool IsOverlapped
     {
-        get { return isOverlapped; }
+        get => isOverlapped;
         private set
         {
             isOverlapped = value;
@@ -61,7 +59,7 @@ public class TouchDetection : MonoBehaviour
     Vector2 touchPosition;
     public Vector2 TouchPosition
     {
-        get { return touchPosition; }
+        get => touchPosition;
         private set
         {
             touchPosition = value;

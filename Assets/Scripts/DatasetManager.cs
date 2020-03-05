@@ -34,7 +34,7 @@ public class DatasetManager : Singleton<DatasetManager>
     string foldername;
     public string FolderName
     {
-        get { return foldername; }
+        get => foldername;
         private set
         {
             foldername = value;
@@ -100,7 +100,7 @@ public class DatasetManager : Singleton<DatasetManager>
 
         if (DatasetPanel.Instance.PackData(out datasetPara))
         {
-            StartCoroutine(SaveImages(datasetPara));
+            StartCoroutine(GenerateDatasetCore(datasetPara));
         }
 
     }
@@ -109,7 +109,7 @@ public class DatasetManager : Singleton<DatasetManager>
     /// <summary>
     /// Iterate the parameters and save image and data to disk
     /// </summary>
-    IEnumerator SaveImages(Dictionary<DOF, Dictionary<DataRange, float>> para)
+    IEnumerator GenerateDatasetCore(Dictionary<DOF, Dictionary<DataRange, float>> para)
     {
         Debug.Log("Start Generaing...");
 
@@ -133,9 +133,9 @@ public class DatasetManager : Singleton<DatasetManager>
 
         // Calculate the total number
         long totalCnt = 1;
-        foreach(var joint in para.Keys)
+        foreach (var joint in para.Keys)
         {
-            totalCnt *= (para[joint][DataRange.step] == 0) ? 
+            totalCnt *= (para[joint][DataRange.step] == 0) ?
                 1 : Convert.ToInt64((para[joint][DataRange.max] - para[joint][DataRange.min]) / para[joint][DataRange.step]);
         }
         DatasetPanel.Instance.UpdateTotalSampleCnt(totalCnt);

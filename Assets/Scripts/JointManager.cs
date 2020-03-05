@@ -62,6 +62,16 @@ public class JointManager : Singleton<JointManager>
         // Get thumb and index finger
         thumb = ScriptFind.FindTouchDetection(Finger.thumb);
         index = ScriptFind.FindTouchDetection(Finger.index);
+
+        // Initialize publish
+        StartCoroutine(Initialize());   //??
+    }
+
+    IEnumerator Initialize()
+    {
+        yield return new WaitForSeconds(2.0f);
+        UpdateJointObjTransform();
+        // JointUpdatePublisher?.Invoke();
     }
 
     void Update()
