@@ -26,16 +26,81 @@ public class JointManager : Singleton<JointManager>
     [SerializeField, Range(-20, 20)]
     float beta = 0;
 
+    // TODO: decide what kind of properties left
+    public float Gamma1 => gamma1;
+    public float Gamma2 => gamma2;
+    public float Gamma3 => gamma3;
+    public float Alpha1 => alpha1;
+    public float Alpha2 => alpha2;
+    public float Beta => beta;
+
+    public float this[DOF jointType]
+    {
+        get
+        {
+            switch (jointType)
+            {
+                case DOF.alpha1:
+                    return alpha1;
+
+                case DOF.alpha2:
+                    return alpha2;
+
+                case DOF.beta:
+                    return beta;
+
+                case DOF.gamma1:
+                    return gamma1;
+
+                case DOF.gamma2:
+                    return gamma2;
+
+                case DOF.gamma3:
+                    return gamma3;
+
+                default:
+                    return 0;
+            }
+
+        }
+        set
+        {
+            switch (jointType)
+            {
+                case DOF.alpha1:
+                    alpha1 = value;
+                    break;
+                case DOF.alpha2:
+                    alpha2 = value;
+                    break;
+                case DOF.beta:
+                    beta = value;
+                    break;
+                case DOF.gamma1:
+                    gamma1 = value;
+                    break;
+                case DOF.gamma2:
+                    gamma2 = value;
+                    break;
+                case DOF.gamma3:
+                    gamma3 = value;
+                    break;
+                default:
+                    break;
+            }
+            UpdateJointObjTransform();
+            JointUpdatePublisher?.Invoke();
+        }
+    }
+
     [Header("Debug Chocie")]
     public bool controlInEditor = false;
+
+    public JointUpdateHander JointUpdatePublisher;
 
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;
     Dictionary<Transform, Vector3> defaultAngles;
-
-    TouchDetection thumb;
-    TouchDetection index;
-    public JointUpdateHander JointUpdatePublisher;
 
     // Start is called before the first frame update
     void Start()
@@ -59,14 +124,14 @@ public class JointManager : Singleton<JointManager>
             defaultAngles[item] = item.localEulerAngles;
         }
 
-        // Get thumb and index finger
-        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
-        index = ScriptFind.FindTouchDetection(Finger.index);
-
         // Initialize publish
         StartCoroutine(Initialize());   //??
     }
 
+    /// <summary>
+    /// TODO: fix it
+    /// </summary>
+    /// <returns></returns>
     IEnumerator Initialize()
     {
         yield return new WaitForSeconds(2.0f);
@@ -79,65 +144,8 @@ public class JointManager : Singleton<JointManager>
         if (controlInEditor)
         {
             UpdateJointObjTransform();
+            JointUpdatePublisher?.Invoke();
         }
-    }
-
-    public float GetDOFValue(DOF joint)
-    {
-        switch (joint)
-        {
-            case DOF.alpha1:
-                return alpha1;
-
-            case DOF.alpha2:
-                return alpha2;
-                
-            case DOF.beta:
-                return beta;
-                
-            case DOF.gamma1:
-                return gamma1;
-                
-            case DOF.gamma2:
-                return gamma2;
-                
-            case DOF.gamma3:
-                return gamma3;
-                
-            default:
-                return 0;
-        }
-    }
-
-    /// <summary>
-    /// Set the parameters for the joint
-    /// </summary>
-    public void UpdateDOFValue(DOF joint, float value)
-    {
-        switch (joint)
-        {
-            case DOF.alpha1:
-                alpha1 = value;
-                break;
-            case DOF.alpha2:
-                alpha2 = value;
-                break;
-            case DOF.beta:
-                beta = value;
-                break;
-            case DOF.gamma1:
-                gamma1 = value;
-                break;
-            case DOF.gamma2:
-                gamma2 = value;
-                break;
-            case DOF.gamma3:
-                gamma3 = value;
-                break;
-            default:
-                break;
-        }
-        UpdateJointObjTransform();
     }
 
     void UpdateJointObjTransform()
@@ -151,52 +159,5 @@ public class JointManager : Singleton<JointManager>
 
         thumbJoints[0].localEulerAngles = defaultAngles[thumbJoints[0]] + new Vector3(0, alpha1, beta);
         thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
-
-        JointUpdatePublisher?.Invoke();
     }
-
-    #region ForDataSaveInDisk
-    /// <summary>
-    /// Generate the header line for the .csv file
-    /// </summary>
-    /// <returns></returns>
-    public string GenerateStreamHeader()
-    {
-        string header = 
-                "Gamma1," + 
-                "Gamma2," + 
-                "Gamma3," + 
-                "Alpha1," + 
-                "Alpha2," + 
-                "Beta," + 
-                "thumb_x," + 
-                "thumb_y," + 
-                "index_x," + 
-                "index_y," + 
-                "ImgName";
-        return header;
-    }
-
-    /// <summary>
-    /// Generate the data line for the .csv file
-    /// </summary>
-    /// <param name="imgName"></param>
-    /// <returns></returns>
-    public string GenerateStreamData(string imgName)
-    {
-        string data =
-            gamma1.ToString("F2") + "," +
-            gamma2.ToString("F2") + "," +
-            gamma3.ToString("F2") + "," +
-            alpha1.ToString("F2") + "," +
-            alpha2.ToString("F2") + "," +
-            beta.ToString("F2") + "," +
-            thumb.TouchPosition.x.ToString("F2") + "," +
-            thumb.TouchPosition.y.ToString("F2") + "," +
-            index.TouchPosition.x.ToString("F2") + "," +
-            index.TouchPosition.y.ToString("F2") + "," +
-            imgName;
-        return data;
-    }
-    #endregion ForDataSaveInDisk
 }

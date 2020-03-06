@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public delegate void FolderNameChangeHandler(string str);
 public delegate void DatasetPanelHandler(bool flag);
+
 /// <summary>
 /// Handle the user's input, including
 /// 1. Save single image
@@ -26,9 +27,7 @@ public class DatasetManager : Singleton<DatasetManager>
 
     [Header("Dataset Menu")]
     public GameObject datasetPanel;
-
     public event DatasetPanelHandler DatasetPanelPublisher;
-
 
     public event FolderNameChangeHandler FolderNameChangePublisher;
     string foldername;
@@ -42,7 +41,7 @@ public class DatasetManager : Singleton<DatasetManager>
         }
     }
 
-    TouchDetection thumb;
+    StreamDataGeneratorProxy streamDataGenerator;
 
     Text debugText;
 
@@ -54,7 +53,7 @@ public class DatasetManager : Singleton<DatasetManager>
         // FolderName = Application.dataPath + "/Screenshots";
         datasetPanel.SetActive(false);
 
-        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+        streamDataGenerator = StreamDataGeneratorProxy.Instance;
     }
 
     // Update is called once per frame
@@ -114,13 +113,13 @@ public class DatasetManager : Singleton<DatasetManager>
         Debug.Log("Start Generaing...");
 
         // Check whether the folder exists
-        if (!Directory.Exists(foldername))
+        if (!Directory.Exists(FolderName))
         {
-            Directory.CreateDirectory(foldername);
+            Directory.CreateDirectory(FolderName);
         }
 
         // Prepare the data file
-        string dataName = foldername + "/data.csv";
+        string dataName = FolderName + "/data.csv";
         if (File.Exists(dataName))
         {
             commonWriter = new StreamWriter(dataName, true);
@@ -128,7 +127,7 @@ public class DatasetManager : Singleton<DatasetManager>
         else
         {
             commonWriter = new StreamWriter(dataName);
-            commonWriter.WriteLine(JointManager.Instance.GenerateStreamHeader());
+            commonWriter.WriteLine(streamDataGenerator.GenerateStreamFileHeader());
         }
 
         // Calculate the total number
@@ -147,37 +146,37 @@ public class DatasetManager : Singleton<DatasetManager>
         gamma1 <= para[DOF.gamma1][DataRange.max];
         gamma1 += Mathf.Max(para[DOF.gamma1][DataRange.step], 1e-8f))
         {
-            JointManager.Instance.UpdateDOFValue(DOF.gamma1, gamma1);
+            JointManager.Instance[DOF.gamma1] = gamma1;
 
             for (float gamma2 = para[DOF.gamma2][DataRange.min];
             gamma2 <= para[DOF.gamma2][DataRange.max];
             gamma2 += Mathf.Max(para[DOF.gamma2][DataRange.step], 1e-8f))
             {
-                JointManager.Instance.UpdateDOFValue(DOF.gamma2, gamma2);
+                JointManager.Instance[DOF.gamma2] = gamma2;
 
                 for (float gamma3 = para[DOF.gamma3][DataRange.min];
                 gamma3 <= para[DOF.gamma3][DataRange.max];
                 gamma3 += Mathf.Max(para[DOF.gamma3][DataRange.step], 1e-8f))
                 {
-                    JointManager.Instance.UpdateDOFValue(DOF.gamma3, gamma3);
+                    JointManager.Instance[DOF.gamma3] = gamma3;
 
                     for (float alpha1 = para[DOF.alpha1][DataRange.min];
                     alpha1 <= para[DOF.alpha1][DataRange.max];
                     alpha1 += Mathf.Max(para[DOF.alpha1][DataRange.step], 1e-8f))
                     {
-                        JointManager.Instance.UpdateDOFValue(DOF.alpha1, alpha1);
+                        JointManager.Instance[DOF.alpha1] = alpha1;
 
                         for (float alpha2 = para[DOF.alpha2][DataRange.min];
                         alpha2 <= para[DOF.alpha2][DataRange.max];
                         alpha2 += Mathf.Max(para[DOF.alpha2][DataRange.step], 1e-8f))
                         {
-                            JointManager.Instance.UpdateDOFValue(DOF.alpha2, alpha2);
+                            JointManager.Instance[DOF.alpha2] = alpha2;
 
                             for (float beta = para[DOF.beta][DataRange.min];
                             beta <= para[DOF.beta][DataRange.max];
                             beta += Mathf.Max(para[DOF.beta][DataRange.step], 1e-8f))
                             {
-                                JointManager.Instance.UpdateDOFValue(DOF.beta, beta);
+                                JointManager.Instance[DOF.beta] = beta;
 
                                 currentCnt++;
                                 DatasetPanel.Instance.UpdateCurrentSampleCnt(currentCnt);
@@ -186,18 +185,20 @@ public class DatasetManager : Singleton<DatasetManager>
                                 yield return null;
 
                                 // If could save, save image here
-                                if (thumb.IsTouching && !thumb.IsOverlapped)
+                                if (streamDataGenerator.IsValid)
                                 {
                                     validCnt++;
 
-                                    // Get a unique image name
-                                    string imgName = GenerateImgName();
+                                    // Get a unique image name and data
+                                    string imgName = null;
+                                    string data = streamDataGenerator.GenerateStreamFileData(out imgName);
+
                                     // Save the image into disk
                                     System.IO.File.WriteAllBytes(
-                                            foldername + '/' + imgName,
+                                            FolderName + '/' + imgName,
                                             CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
                                     // Save para data
-                                    commonWriter.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+                                    commonWriter.WriteLine(data);
                                 }
                             }
                         }
@@ -222,29 +223,20 @@ public class DatasetManager : Singleton<DatasetManager>
     public void SaveSingleImage()
     {
         // Check whether can save this img currently
-        if (thumb.IsTouching == false ||
-            thumb.IsOverlapped == true)
+        if (!streamDataGenerator.IsValid)
         {
             WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
             return;
         }
 
         // Check whether the folder exists
-        if (!Directory.Exists(foldername))
+        if (!Directory.Exists(FolderName))
         {
-            Directory.CreateDirectory(foldername);
+            Directory.CreateDirectory(FolderName);
         }
 
-        // Get a unique image name
-        string imgName = GenerateImgName();
-
-        // Save the image into disk
-        System.IO.File.WriteAllBytes(
-                foldername + '/' + imgName,
-                CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
-
         // Save the data into disk
-        string dataName = foldername + "/data.csv";
+        string dataName = FolderName + "/data.csv";
         StreamWriter writer;
         if (File.Exists(dataName))
         {
@@ -253,9 +245,19 @@ public class DatasetManager : Singleton<DatasetManager>
         else
         {
             writer = new StreamWriter(dataName);
-            writer.WriteLine(JointManager.Instance.GenerateStreamHeader());
+            writer.WriteLine(streamDataGenerator.GenerateStreamFileHeader());
         }
-        writer.WriteLine(JointManager.Instance.GenerateStreamData(imgName));
+
+        // Get a unique image name and data
+        string imgName = null;
+        string data = streamDataGenerator.GenerateStreamFileData(out imgName);
+
+        // Save the image into disk
+        System.IO.File.WriteAllBytes(
+                FolderName + '/' + imgName,
+                CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
+
+        writer.WriteLine(data);
         writer.Flush();
         writer.Close();
 
@@ -306,21 +308,6 @@ public class DatasetManager : Singleton<DatasetManager>
                 FolderName = fullDirPath;
             }
         }
-    }
-
-    /// <summary>
-    /// Generate a unique PNG image name with timestamp
-    /// </summary>
-    /// <returns></returns>
-    string GenerateImgName()
-    {
-        string filename = System.DateTime.Now + "_" + Time.time.ToString("F4");
-        filename = filename.Replace('/', '_');
-        filename = filename.Replace(' ', '_');
-        filename = filename.Replace(':', '_');
-        filename = filename.Replace('.', '_');
-        filename += ".png";
-        return filename;
     }
 
     /// <summary>

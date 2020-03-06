@@ -18,12 +18,10 @@ public class TouchDetection : MonoBehaviour
     // The type of this finger
     public Finger fingertipType = Finger.thumb;
 
-    // Type of the finger that is isTouching with
-    Finger targetFingerType;
-
-    Collider m_Collider;
-
     public event StatusUpdateHandler TouchStatusUpdatePublisher;
+    public event StatusUpdateHandler OverlapStatusUpdatePublisher;
+    public event PositionChangeHandler TouchPositionUpdatePublisher;
+
     // Whether this finger is isTouching by another
     bool isTouching;
     public bool IsTouching
@@ -31,12 +29,11 @@ public class TouchDetection : MonoBehaviour
         get => isTouching;
         private set
         {
-            isTouching = value; 
+            isTouching = value;
             TouchStatusUpdatePublisher?.Invoke(value);
         }
     }
 
-    public event StatusUpdateHandler OverlapStatusUpdatePublisher;
     // Whether this finger is overlapped too much
     bool isOverlapped;
     public bool IsOverlapped
@@ -49,11 +46,6 @@ public class TouchDetection : MonoBehaviour
         }
     }
 
-
-    // The touch point
-    Transform touchPointObj;
-    MeshRenderer touchPointObjMesh;
-    public event PositionChangeHandler TouchPositionUpdatePublisher;
     // For thumb, the touch position is the X-Y position relative to the index finger coordinate. 
     // For index finger, the touch position is the X-Y position relative to the thumb coordinate. 
     Vector2 touchPosition;
@@ -66,7 +58,6 @@ public class TouchDetection : MonoBehaviour
             TouchPositionUpdatePublisher?.Invoke(value);
         }
     }
-
 
     // Start is called before the first frame update
     void Start()
@@ -91,7 +82,7 @@ public class TouchDetection : MonoBehaviour
         TouchPosition = Vector2.zero;
 
         // Subscribe the joint update event
-        JointManager.Instance.JointUpdatePublisher += DetectTouching;
+        JointManager.Instance.JointUpdatePublisher += DetectTouchingStatus;
     }
 
     void OnUpdateTouchStatus(bool flag)
@@ -99,10 +90,19 @@ public class TouchDetection : MonoBehaviour
         touchPointObjMesh.enabled = flag;
     }
 
+
+
     #region ParaforAccurateTouchDetection
+    // Type of the finger that is isTouching with
+    Finger targetFingerType;
+    // This collider
+    Collider m_Collider;
+    // The touch point
+    Transform touchPointObj;
+    MeshRenderer touchPointObjMesh;
+
     // other finger's script
     TouchDetection otherFinger;
-
     // other finger's collider
     Collider otherCollider;
 
@@ -144,24 +144,32 @@ public class TouchDetection : MonoBehaviour
 
     // Touch point position in world coordinate (millimeter)
     Vector2 worldTouchMM = Vector2.zero;
-    #endregion ParaforAccurateTouchDetection
+    #endregion
 
     /// <summary>
     /// Detect whether this finger is colliding with the other collider
     /// </summary>
-    void DetectTouching()
+    void DetectTouchingStatus()
     {
         hitColliders = Physics.OverlapSphere(
             otherCollider.ClosestPoint(m_Collider.bounds.center), 0.0001f);
+
         bool flag = false;
         foreach (var coll in hitColliders)
         {
-            if (coll == m_Collider)
-            {
-                flag = true;
-            }
+            flag |= (coll == m_Collider);
         }
-        AccurateDetect(otherCollider, flag);
+
+        if (flag)
+        {
+            IsTouching = true;
+            DetectOverlapStatus(otherCollider);
+        }
+        else
+        {
+            IsTouching = false;
+            IsOverlapped = false;
+        }
     }
 
     /// <summary>
@@ -169,39 +177,30 @@ public class TouchDetection : MonoBehaviour
     /// </summary>
     /// <param name="other"></param>
     /// <param name="isEntry"></param>
-    void AccurateDetect(Collider other, bool isEntry)
+    void DetectOverlapStatus(Collider other)
     {
         if (other == null)
             return;
 
-        IsTouching = isEntry;
+        // Set the para for the Ray
+        ray.origin = other.bounds.center;
+        ray.direction = m_Collider.bounds.center - other.bounds.center;
 
-        // Calculate the position of touch point
-        if (IsTouching)
+        // Shoot the ray, get the touch point which is the intersection between ray and the collider
+        m_Collider.Raycast(ray, out hitResult, 100.0f);
+
+        touchPointObj.position = hitResult.point;
+
+        // Set overlapped true if the distance between two touch point is too large
+        IsOverlapped =
+            Vector3.Distance(
+                touchPointObj.position,
+                otherFinger.touchPointObj.position) > 1e-3;
+
+        // Calculate the touch point
+        if (!IsOverlapped)
         {
-            // Set the para for the Ray
-            ray.origin = other.bounds.center;
-            ray.direction = m_Collider.bounds.center - other.bounds.center;
-
-            // Shoot the ray, get the touch point which is the intersection between ray and the collider
-            m_Collider.Raycast(ray, out hitResult, 100.0f);
-            touchPointObj.position = hitResult.point;
-
-            // Set overlapped true if the distance between two touch point is too large
-            IsOverlapped =
-                Vector3.Distance(
-                    touchPointObj.position,
-                    otherFinger.touchPointObj.position) > 1e-3;
-
-            // Calculate the touch point
-            if (!IsOverlapped)
-            {
-                TouchPosition = CalcTouchPosition(other);
-            }
-        }
-        else if (!IsTouching)
-        {
-            IsOverlapped = false;
+            CalcTouchPosition(other);
         }
     }
 
@@ -210,7 +209,7 @@ public class TouchDetection : MonoBehaviour
     /// </summary>
     /// <param name="other"></param>
     /// <returns name="worldPositionMM"></returns>
-    Vector2 CalcTouchPosition(Collider other)
+    void CalcTouchPosition(Collider other)
     {
         // Get the coordinate
         // X axis faces up (to world)
@@ -256,85 +255,6 @@ public class TouchDetection : MonoBehaviour
         // Transfer it to the world scale parameters but from meter to millimeter
         worldTouchMM = localTouchM * 1000.0f * other.transform.localScale.x;
 
-        return worldTouchMM;
+        TouchPosition = worldTouchMM;
     }
-
-    #region TestColliderFunctions
-    void TestBounds()
-    {
-        Collider m_Collider;
-        Vector3 m_Center;
-        Vector3 m_Size, m_Min, m_Max;
-
-        //Fetch the Collider from the GameObject
-        m_Collider = GetComponent<Collider>();
-        //Fetch the center of the Collider volume
-        m_Center = m_Collider.bounds.center;
-        //Fetch the size of the Collider volume
-        m_Size = m_Collider.bounds.size;
-        //Fetch the minimum and maximum bounds of the Collider volume
-        m_Min = m_Collider.bounds.min;
-        m_Max = m_Collider.bounds.max;
-        //Closest point
-        Vector3 closetPointOnBound = m_Collider.bounds.ClosestPoint(new Vector3(0, 0, 0));
-
-        //Output to the console the center and size of the Collider volume
-        Debug.Log("Object World Position :" + transform.position.ToString("F4"));
-        Debug.Log("Collider Center : " + m_Center.ToString("F4"));
-        Debug.Log("Collider Size : " + m_Size.ToString("F4"));
-        Debug.Log("Collider bound Minimum : " + m_Min.ToString("F4"));
-        Debug.Log("Collider bound Maximum : " + m_Max.ToString("F4"));
-        Debug.Log("Closest Point on the bounds to the original point : " + closetPointOnBound.ToString("F4"));
-    }
-
-    void TestContact()
-    {
-        Collider m_Collider;
-        m_Collider = GetComponent<Collider>();
-
-        // Settings in the physics para
-        float contactOffset = m_Collider.contactOffset;
-
-        Debug.Log(fingertipType.ToString() + " " + contactOffset.ToString("F4"));
-    }
-
-    GameObject targetPointObj;
-    GameObject objOnCollider;
-    GameObject objOnBound;
-    GameObject objBoundRay;
-    void TestClosestPoint()
-    {
-        Collider m_Collider;
-        m_Collider = GetComponent<Collider>();
-
-        if (targetPointObj == null)
-        {
-            targetPointObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            targetPointObj.transform.localScale = Vector3.one * 0.01f;
-
-            objOnCollider = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            objOnCollider.transform.localScale = Vector3.one * 0.001f;
-
-            objOnBound = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            objOnBound.transform.localScale = Vector3.one * 0.001f;
-            objOnBound.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 0.0f, 0.0f);
-
-            objBoundRay = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            objBoundRay.transform.localScale = Vector3.one * 0.001f;
-            objBoundRay.GetComponent<MeshRenderer>().material.color = new Color(0.0f, 1.0f, 0.0f);
-        }
-
-        objOnCollider.transform.position = m_Collider.ClosestPoint(targetPointObj.transform.position);
-
-        objOnBound.transform.position = m_Collider.ClosestPointOnBounds(targetPointObj.transform.position);
-
-        Ray ray = new Ray(targetPointObj.transform.position, m_Collider.bounds.center - targetPointObj.transform.position);
-        RaycastHit hit;
-
-        if (m_Collider.Raycast(ray, out hit, 100.0f))
-        {
-            objBoundRay.transform.position = hit.point;
-        }
-    }
-    #endregion TestColliderFunctions
 }

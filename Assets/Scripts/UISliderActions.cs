@@ -49,7 +49,7 @@ public class UISliderActions : MonoBehaviour
 
     void SendDataToJoint()
     {
-        JointManager.Instance.UpdateDOFValue(handleType, slider.value);
+        JointManager.Instance[handleType] = slider.value;
     }
 
     void UpdateText()
@@ -59,7 +59,7 @@ public class UISliderActions : MonoBehaviour
 
     void UpdateValue()
     {
-        slider.value = JointManager.Instance.GetDOFValue(handleType);
+        slider.value = JointManager.Instance[handleType];
     }
 
 }

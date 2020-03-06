@@ -18,8 +18,8 @@ public class DatasetPanel : Singleton<DatasetPanel>
     Text cntIndicator;
     long totalCnt;
     long currentCnt;
-    Scrollbar percentageIndicator;
     float percentage;
+    Scrollbar percentageIndicator;
 
     // Start is called before the first frame update
     void Start()

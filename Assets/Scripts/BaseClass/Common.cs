@@ -11,7 +11,7 @@ using System;
 /// </summary>
 namespace Common
 {
-    #region FingerAndJointsEnum
+    #region EnumElements
     public enum DOF
     {
         gamma1,
@@ -34,7 +34,7 @@ namespace Common
         max,
         step,
     }
-    #endregion FingerAndJointsEnum
+    #endregion
 
     #region FindScripts
     public class ScriptFind
@@ -52,7 +52,16 @@ namespace Common
             return null;
         }
     }
-    #endregion FindScripts
+    #endregion
+
+    #region CommonInterface
+    public interface IStreamGeneratorAction
+    {
+        string GenerateStreamFileHeader();
+        string GenerateStreamFileData(out string imgName);
+    }
+
+    #endregion
 
     #region FileFolderDialog
     /// <summary>
@@ -138,5 +147,5 @@ namespace Common
         [DllImport("User32.dll", SetLastError = true, ThrowOnUnmappableChar = true, CharSet = CharSet.Auto)]
         public static extern int MessageBox(IntPtr handle, String message, String title, int type);
     }
-    #endregion FileFolderDialog
+    #endregion
 }
