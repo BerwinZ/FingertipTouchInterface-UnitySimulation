@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common;
 
-public delegate void JointUpdateHander();
 
 /// <summary>
 /// This class control the values of 6 DOF of the thumb and index finger joints.
 /// </summary>
-public class JointManager : Singleton<JointManager>
+public class JointManager : Singleton<JointManager>, IJointMangerAction
 {
+    [Header("Debug Chocie")]
+    public bool controlInEditor = false;
+
     [Header("Index Finger")]
     [SerializeField, Range(-20, 20)]
     float gamma1 = 0;
@@ -26,15 +28,16 @@ public class JointManager : Singleton<JointManager>
     [SerializeField, Range(-20, 20)]
     float beta = 0;
 
-    // TODO: decide what kind of properties left
-    public float Gamma1 => gamma1;
-    public float Gamma2 => gamma2;
-    public float Gamma3 => gamma3;
-    public float Alpha1 => alpha1;
-    public float Alpha2 => alpha2;
-    public float Beta => beta;
+    public float GetJointValue(DOF joint)
+    {
+        return this[joint];
+    }
+    public void SetJointValue(DOF joint, float value)
+    {
+        this[joint] = value;
+    }
 
-    public float this[DOF jointType]
+    float this[DOF jointType]
     {
         get
         {
@@ -89,14 +92,11 @@ public class JointManager : Singleton<JointManager>
                     break;
             }
             UpdateJointObjTransform();
-            JointUpdatePublisher?.Invoke();
+            OnJointUpdate?.Invoke();
         }
     }
 
-    [Header("Debug Chocie")]
-    public bool controlInEditor = false;
-
-    public JointUpdateHander JointUpdatePublisher;
+    public event JointUpdateHander OnJointUpdate;
 
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;
@@ -144,7 +144,7 @@ public class JointManager : Singleton<JointManager>
         if (controlInEditor)
         {
             UpdateJointObjTransform();
-            JointUpdatePublisher?.Invoke();
+            OnJointUpdate?.Invoke();
         }
     }
 

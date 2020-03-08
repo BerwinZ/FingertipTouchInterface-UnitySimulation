@@ -18,7 +18,7 @@ public class UIToggleActions : MonoBehaviour
 
     Toggle toggle;
 
-    TouchDetection thumb;
+    IFingerAction thumb;
 
     /// <summary>
     /// Start is called on the frame when a script is enabled just before
@@ -27,15 +27,14 @@ public class UIToggleActions : MonoBehaviour
     void Start()
     {
         toggle = transform.GetComponent<Toggle>();
-        TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
         thumb = ScriptFind.FindTouchDetection(Finger.thumb);
         switch (flagType)
         {
             case FlagType.isTouched:
-                thumb.TouchStatusUpdatePublisher += ChangeToggleState;
+                thumb.OnTouchStatusChange += ChangeToggleState;
                 break;
             case FlagType.isOverlapped:
-                thumb.OverlapStatusUpdatePublisher += ChangeToggleState;
+                thumb.OnOverlapStatusChange += ChangeToggleState;
                 break;
             default:
                 break;

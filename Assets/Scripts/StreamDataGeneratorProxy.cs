@@ -5,9 +5,9 @@ using Common;
 
 public class StreamDataGeneratorProxy : Singleton<StreamDataGeneratorProxy>, IStreamGeneratorAction
 {
-    JointManager jointManager;
-    TouchDetection thumb;
-    TouchDetection indexFinger;
+    IJointMangerAction jointManager;
+    IFingerAction thumb;
+    IFingerAction indexFinger;
     IStreamGeneratorAction generator;
 
     // Start is called before the first frame update
@@ -19,15 +19,24 @@ public class StreamDataGeneratorProxy : Singleton<StreamDataGeneratorProxy>, ISt
         generator = new StreamDataGenerator(jointManager, thumb, indexFinger);
     }
 
-    public bool IsValid => thumb.IsTouching && !thumb.IsOverlapped;
- 
+    bool IsValid => thumb.IsTouching && !thumb.IsOverlapped;
+
     public string GenerateStreamFileHeader()
     {
         return generator.GenerateStreamFileHeader();
     }
 
-    public string GenerateStreamFileData(out string imgName)
+    public bool GenerateStreamFileData(out string data, out string imgName)
     {
-        return generator.GenerateStreamFileData(out imgName);
+        if (IsValid)
+        {
+            return generator.GenerateStreamFileData(out data, out imgName);
+        }
+        else
+        {
+            data = null;
+            imgName = null;
+            return false;
+        }
     }
 }

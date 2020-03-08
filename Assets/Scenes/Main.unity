@@ -2077,7 +2077,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &336988538
 MonoBehaviour:
@@ -5263,8 +5263,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 837565847}
-  - component: {fileID: 837565846}
   - component: {fileID: 837565848}
+  - component: {fileID: 837565846}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -5281,7 +5281,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 837565845}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f683ecf368c90a940b30ed3bf072115d, type: 3}
+  m_Script: {fileID: 11500000, guid: e9a2ea4f01f558b428dbaf7934766b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cameraToTakeShot: {fileID: 963194227}
@@ -7362,15 +7362,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 837565846}
-        m_MethodName: OpenDatasetSettings
-        m_Mode: 1
+        m_MethodName: OpenDatasetPanel
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &1103039531
 MonoBehaviour:
@@ -7630,7 +7630,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 837565846}
-        m_MethodName: CancelSettingsOrGenerating
+        m_MethodName: StopCancelGenerating
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12626,7 +12626,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 837565846}
+      - m_Target: {fileID: 0}
         m_MethodName: OpenDatasetSettings
         m_Mode: 1
         m_Arguments:
@@ -15289,13 +15289,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 305c4271b1cb60c46a3cf6abac2a902f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlInEditor: 0
   gamma1: 0
   gamma2: 0
   gamma3: 0
   alpha1: 0
   alpha2: -0
   beta: 0
-  controlInEditor: 0
 --- !u!1 &8929560994107636032
 GameObject:
   m_ObjectHideFlags: 0

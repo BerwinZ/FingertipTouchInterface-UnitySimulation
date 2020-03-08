@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Common;
 
-public class UIFolderPathIndicator : Singleton<UIFolderPathIndicator>
+public class UIFolderPathIndicator : MonoBehaviour
 {
     Text folderIndicator;
+    IGameAction gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
         folderIndicator = transform.GetComponent<Text>();
-        DatasetManager.Instance.FolderNameChangePublisher += UpdateText;
-        UpdateText(DatasetManager.Instance.FolderName);
+        gameManager = ProgramManager.Instance;
+        gameManager.OnFolderNameChange += UpdateText;
+        UpdateText(ProgramManager.Instance.FolderName);
     }
 
     public void UpdateText(string foldername)

@@ -15,14 +15,19 @@ public class UISliderActions : MonoBehaviour
 
     Slider slider;
     Text text;
+    IJointMangerAction jointManager;
+    IGameAction gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
         slider = transform.GetComponent<Slider>();
         text = transform.Find("Number").GetComponent<Text>();
+        gameManager = ProgramManager.Instance;
 
-        DatasetManager.Instance.DatasetPanelPublisher += OnDatasetPanelOpen;
+        jointManager = JointManager.Instance;
+
+        gameManager.OnDatasetPanelChange += OnDatasetPanelOpen;
         OnDatasetPanelOpen(false);
     }
 
@@ -31,25 +36,25 @@ public class UISliderActions : MonoBehaviour
         // When the dataset panel doesn't open, send data to the joint
         if (!flag)
         {
-            JointManager.Instance.JointUpdatePublisher -= UpdateValue;
+            jointManager.OnJointUpdate -= UpdateValue;
 
             slider.onValueChanged.RemoveAllListeners();
             slider.onValueChanged.AddListener(delegate { SendDataToJoint(); });
             slider.onValueChanged.AddListener(delegate { UpdateText(); });
-            
+
         }
         else // When the dataset panel opens, substribe the joint update event
         {
             slider.onValueChanged.RemoveAllListeners();
             slider.onValueChanged.AddListener(delegate { UpdateText(); });
 
-            JointManager.Instance.JointUpdatePublisher += UpdateValue;
+            jointManager.OnJointUpdate += UpdateValue;
         }
     }
 
     void SendDataToJoint()
     {
-        JointManager.Instance[handleType] = slider.value;
+        jointManager.SetJointValue(handleType, slider.value);
     }
 
     void UpdateText()
@@ -59,7 +64,7 @@ public class UISliderActions : MonoBehaviour
 
     void UpdateValue()
     {
-        slider.value = JointManager.Instance[handleType];
+        slider.value = jointManager.GetJointValue(handleType);
     }
 
 }

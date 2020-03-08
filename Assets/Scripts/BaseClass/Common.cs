@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Includes some common functions used in this projection
@@ -44,7 +45,7 @@ namespace Common
             TouchDetection[] fingeres = GameObject.FindObjectsOfType<TouchDetection>();
             foreach (var finger in fingeres)
             {
-                if (finger.fingertipType == fingertype)
+                if (finger.FingerType == fingertype)
                 {
                     return finger;
                 }
@@ -58,9 +59,59 @@ namespace Common
     public interface IStreamGeneratorAction
     {
         string GenerateStreamFileHeader();
-        string GenerateStreamFileData(out string imgName);
+        bool GenerateStreamFileData(out string data, out string imgName);
     }
 
+    public delegate void JointUpdateHander();
+    public interface IJointMangerAction
+    {
+        float GetJointValue(DOF joint);
+        void SetJointValue(DOF joint, float value);
+        event JointUpdateHander OnJointUpdate;
+    }
+
+    public delegate void StatusUpdateHandler(bool flag);
+    public delegate void PositionChangeHandler(Vector2 pos);
+    public interface IFingerAction
+    {
+        bool IsTouching { get; }
+        bool IsOverlapped { get; }
+        Vector2 TouchPosition { get; }
+        event StatusUpdateHandler OnTouchStatusChange;
+        event StatusUpdateHandler OnOverlapStatusChange;
+        event PositionChangeHandler OnTouchPositionChange;
+    }
+
+    public interface IDatasetGeneratorAction
+    {
+        string FolderName { get; set; }
+        string CSVFileName { get; set; }
+        void Initialize(Camera cameraToTakeShot,
+                        bool sameSizeWithWindow,
+                        IStreamGeneratorAction streamDataGenerator,
+                        IJointMangerAction jointManager,
+                        IPanelAction datasetPanel,
+                        string folderName,
+                        string csvFileName);
+        void StartGenatingDataset();
+        void StopCancelGenerating();
+        void SaveSingleImage();
+    }
+
+    public delegate void FolderNameChangeHandler(string str);
+    public delegate void DatasetPanelHandler(bool flag);
+    public interface IGameAction
+    {
+        event DatasetPanelHandler OnDatasetPanelChange;
+        event FolderNameChangeHandler OnFolderNameChange;
+    }
+
+    public interface IPanelAction
+    {
+        bool PackData(out Dictionary<DOF, Dictionary<DataRange, float>> datasetPara);
+        void UpdateTotalSampleCnt(long value);
+        void UpdateCurrentSampleCnt(long value);
+    }
     #endregion
 
     #region FileFolderDialog

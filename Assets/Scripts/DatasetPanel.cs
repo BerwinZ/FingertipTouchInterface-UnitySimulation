@@ -11,7 +11,7 @@ using System;
 /// 2. Generate the dictionary of dataset setting from the UI
 /// 3. Update the generating process in panel
 /// </summary>
-public class DatasetPanel : Singleton<DatasetPanel>
+public class DatasetPanel : MonoBehaviour, IPanelAction
 {
     Dictionary<DOF, Dictionary<DataRange, InputField>> inputFieldObj;
 

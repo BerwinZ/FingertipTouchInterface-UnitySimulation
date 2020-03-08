@@ -7,7 +7,7 @@ using Common;
 /// <summary>
 /// Draw the position of the touch point
 /// </summary>
-public class DrawBoard : Singleton<DrawBoard>
+public class DrawBoard : MonoBehaviour
 {
     [Range(5, 30)]
     public float movScaler = 5.0f;
@@ -15,8 +15,8 @@ public class DrawBoard : Singleton<DrawBoard>
     Image pointMesh;
     Text indicatorThumb;
     Text indicatorIndex;
-    TouchDetection thumb;
-    TouchDetection index;
+    IFingerAction thumb;
+    IFingerAction index;
 
     // Start is called before the first frame update
     void Start()
@@ -27,13 +27,13 @@ public class DrawBoard : Singleton<DrawBoard>
         indicatorIndex = transform.GetChild(3).GetComponent<Text>();
 
         thumb = ScriptFind.FindTouchDetection(Finger.thumb);
-        thumb.TouchStatusUpdatePublisher += TurnOnOffDotfromTouching;
-        thumb.OverlapStatusUpdatePublisher += TurnOnOffDotfromOverlapped;
-        thumb.TouchPositionUpdatePublisher += UpdateDrawingDotPos;
-        thumb.TouchPositionUpdatePublisher += UpdateThumbIndicator;
+        thumb.OnTouchStatusChange += TurnOnOffDotfromTouching;
+        thumb.OnOverlapStatusChange += TurnOnOffDotfromOverlapped;
+        thumb.OnTouchPositionChange += UpdateDrawingDotPos;
+        thumb.OnTouchPositionChange += UpdateThumbIndicator;
 
         index = ScriptFind.FindTouchDetection(Finger.index);
-        index.TouchPositionUpdatePublisher += UpdateIndexIndicator;
+        index.OnTouchPositionChange += UpdateIndexIndicator;
     }
 
     Vector3 pointPos = Vector3.zero;

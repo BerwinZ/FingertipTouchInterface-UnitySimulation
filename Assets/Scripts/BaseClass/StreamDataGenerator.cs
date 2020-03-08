@@ -6,11 +6,11 @@ using Common;
 public class StreamDataGenerator : IStreamGeneratorAction
 {
 
-    JointManager jointManager;
-    TouchDetection thumb;
-    TouchDetection indexFinger;
+    IJointMangerAction jointManager;
+    IFingerAction thumb;
+    IFingerAction indexFinger;
 
-    public StreamDataGenerator(JointManager jointManager, TouchDetection thumb, TouchDetection indexFinger)
+    public StreamDataGenerator(IJointMangerAction jointManager, IFingerAction thumb, IFingerAction indexFinger)
     {
         this.jointManager = jointManager;
         this.thumb = thumb;
@@ -34,23 +34,22 @@ public class StreamDataGenerator : IStreamGeneratorAction
         return header;
     }
 
-    public string GenerateStreamFileData(out string imgName)
+    public bool GenerateStreamFileData(out string data, out string imgName)
     {
         imgName = GenerateImageName();
-        string data =
-               jointManager.Gamma1.ToString("F2") + "," +
-               jointManager.Gamma2.ToString("F2") + "," +
-               jointManager.Gamma3.ToString("F2") + "," +
-               jointManager.Alpha1.ToString("F2") + "," +
-               jointManager.Alpha2.ToString("F2") + "," +
-               jointManager.Beta.ToString("F2") + "," +
+        data =
+               jointManager.GetJointValue(DOF.gamma1).ToString("F2") + "," +
+               jointManager.GetJointValue(DOF.gamma2).ToString("F2") + "," +
+               jointManager.GetJointValue(DOF.gamma3).ToString("F2") + "," +
+               jointManager.GetJointValue(DOF.alpha1).ToString("F2") + "," +
+               jointManager.GetJointValue(DOF.alpha2).ToString("F2") + "," +
+               jointManager.GetJointValue(DOF.beta).ToString("F2") + "," +
                thumb.TouchPosition.x.ToString("F2") + "," +
                thumb.TouchPosition.y.ToString("F2") + "," +
                indexFinger.TouchPosition.x.ToString("F2") + "," +
                indexFinger.TouchPosition.y.ToString("F2") + "," +
                imgName;
-        return data;
-
+        return true;
     }
 
     /// <summary>
