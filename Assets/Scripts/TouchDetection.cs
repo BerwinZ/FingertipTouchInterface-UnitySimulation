@@ -16,9 +16,9 @@ public class TouchDetection : MonoBehaviour, IFingerAction
     Finger fingertipType = Finger.thumb;
     public Finger FingerType => fingertipType;
 
-    public event StatusUpdateHandler OnTouchStatusChange;
-    public event StatusUpdateHandler OnOverlapStatusChange;
-    public event PositionChangeHandler OnTouchPositionChange;
+    public event BooleanEventHandler OnTouchStatusChange;
+    public event BooleanEventHandler OnOverlapStatusChange;
+    public event Vector2EventHandler OnTouchPositionChange;
 
     // Whether this finger is isTouching by another
     bool isTouching;

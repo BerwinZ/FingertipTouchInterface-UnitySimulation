@@ -55,6 +55,13 @@ namespace Common
     }
     #endregion
 
+    #region CommonDelegate
+    public delegate void VoidEventHandler();
+    public delegate void BooleanEventHandler(bool flag);
+    public delegate void StringEventHandler(string str);
+    public delegate void Vector2EventHandler(Vector2 pos);
+    #endregion
+
     #region CommonInterface
     public interface IStreamGeneratorAction
     {
@@ -62,24 +69,21 @@ namespace Common
         bool GenerateStreamFileData(out string data, out string imgName);
     }
 
-    public delegate void JointUpdateHander();
     public interface IJointMangerAction
     {
         float GetJointValue(DOF joint);
         void SetJointValue(DOF joint, float value);
-        event JointUpdateHander OnJointUpdate;
+        event VoidEventHandler OnJointUpdate;
     }
 
-    public delegate void StatusUpdateHandler(bool flag);
-    public delegate void PositionChangeHandler(Vector2 pos);
     public interface IFingerAction
     {
         bool IsTouching { get; }
         bool IsOverlapped { get; }
         Vector2 TouchPosition { get; }
-        event StatusUpdateHandler OnTouchStatusChange;
-        event StatusUpdateHandler OnOverlapStatusChange;
-        event PositionChangeHandler OnTouchPositionChange;
+        event BooleanEventHandler OnTouchStatusChange;
+        event BooleanEventHandler OnOverlapStatusChange;
+        event Vector2EventHandler OnTouchPositionChange;
     }
 
     public interface IDatasetGeneratorAction
@@ -93,22 +97,22 @@ namespace Common
                         IPanelAction datasetPanel,
                         string folderName,
                         string csvFileName);
-        void StartGenatingDataset();
+        void StartGeneratingDataset();
         void StopCancelGenerating();
         void SaveSingleImage();
+        void SearchGeneratingDataset();
     }
 
-    public delegate void FolderNameChangeHandler(string str);
-    public delegate void DatasetPanelHandler(bool flag);
     public interface IGameAction
     {
-        event DatasetPanelHandler OnDatasetPanelChange;
-        event FolderNameChangeHandler OnFolderNameChange;
+        event BooleanEventHandler OnDatasetPanelChange;
+        event StringEventHandler OnFolderNameChange;
     }
 
     public interface IPanelAction
     {
-        bool PackData(out Dictionary<DOF, Dictionary<DataRange, float>> datasetPara);
+        bool PackData(
+            out Dictionary<DOF, Dictionary<DataRange, float>> datasetPara);
         void UpdateTotalSampleCnt(long value);
         void UpdateCurrentSampleCnt(long value);
     }

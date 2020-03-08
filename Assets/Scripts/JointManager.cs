@@ -96,7 +96,7 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
         }
     }
 
-    public event JointUpdateHander OnJointUpdate;
+    public event VoidEventHandler OnJointUpdate;
 
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;

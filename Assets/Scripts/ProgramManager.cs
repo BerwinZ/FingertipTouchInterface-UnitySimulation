@@ -54,8 +54,8 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
     IPanelAction datasetPanelScript;
     IDatasetGeneratorAction datasetGenerator;
 
-    public event DatasetPanelHandler OnDatasetPanelChange;
-    public event FolderNameChangeHandler OnFolderNameChange;
+    public event BooleanEventHandler OnDatasetPanelChange;
+    public event StringEventHandler OnFolderNameChange;
 
     void Start()
     {
@@ -104,9 +104,9 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         }
 
     }
-    public void StartGenatingDataset()
+    public void StartGeneratingDataset()
     {
-        datasetGenerator.StartGenatingDataset();
+        datasetGenerator.StartGeneratingDataset();
     }
     public void StopCancelGenerating()
     {
@@ -116,6 +116,11 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
     public void SaveSingleImage()
     {
         datasetGenerator.SaveSingleImage();
+    }
+
+    public void SearchGeneratingDataset()
+    {
+        datasetGenerator.SearchGeneratingDataset();
     }
 
     /// <summary>

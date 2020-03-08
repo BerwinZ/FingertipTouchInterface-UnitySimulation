@@ -22,7 +22,7 @@ public class DatasetManager : MonoBehaviour, IDatasetGeneratorAction
     IStreamGeneratorAction streamDataGenerator;
     IJointMangerAction jointManager;
     IPanelAction datasetPanel;
-    
+
     // Start is called before the first frame update
     public void Initialize(Camera cameraToTakeShot,
                           bool sameSizeWithWindow,
@@ -44,7 +44,7 @@ public class DatasetManager : MonoBehaviour, IDatasetGeneratorAction
     /// <summary>
     /// Start to generate dataset
     /// </summary>
-    public void StartGenatingDataset()
+    public void StartGeneratingDataset()
     {
         Dictionary<DOF, Dictionary<DataRange, float>> datasetPara = new Dictionary<DOF, Dictionary<DataRange, float>>();
 
@@ -196,6 +196,27 @@ public class DatasetManager : MonoBehaviour, IDatasetGeneratorAction
 
         WinFormTools.MessageBox(IntPtr.Zero, "Saved Image!", "Finish", 0);
         // LoadCSVFile(csvName);
+    }
+
+    public void SearchGeneratingDataset()
+    {
+        Debug.Log("Start Searching...");
+
+        StartCoroutine(SearchGeneratingCore());
+    }
+
+    IEnumerator SearchGeneratingCore()
+    {
+        // Prepare the data file
+        commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName);
+        int validCnt = 0;
+
+        // TODO: BFS DFS Search
+
+        WinFormTools.MessageBox(IntPtr.Zero, "Valid Image: " + validCnt, "Finish", 0);
+
+        Debug.Log("Finish Generaing!");
+        yield return null;
     }
 
     StreamWriter CreateOrOpenFolderFile(string folderName, string csvFileName)
