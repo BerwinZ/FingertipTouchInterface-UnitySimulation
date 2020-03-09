@@ -21,36 +21,12 @@ using System;
 ///     2.3 Update UI indicator
 ///     2.4 Provide a interface to stop the process any time
 /// </summary>
-public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
+public class IteratedDatasetGenerator : DatasetGeneratorBase
 {
-    public string FolderName { get; set; }
-    public string CSVFileName { get; set; }
-    bool IsValid => finger.IsTouching && !finger.IsOverlapped;
-    IFingerAction finger;
-    IJointMangerAction jointManager;
-    IPanelAction datasetPanel;
-    IStreamGeneratorAction streamDataGenerator;
-
-    // Start is called before the first frame update
-    public void Initialize(IStreamGeneratorAction streamDataGenerator,
-                           IJointMangerAction jointManager,
-                           IPanelAction datasetPanel,
-                           IFingerAction finger,
-                           string folderName,
-                           string csvFileName)
-    {
-        this.streamDataGenerator = streamDataGenerator;
-        this.jointManager = jointManager;
-        this.datasetPanel = datasetPanel;
-        this.finger = finger;
-        this.FolderName = folderName;
-        this.CSVFileName = csvFileName;
-    }
-
     /// <summary>
     /// Start to generate dataset
     /// </summary>
-    public void StartGeneratingDataset()
+    public override void StartGeneratingDataset()
     {
         Dictionary<DOF, Dictionary<DataRange, float>> datasetPara = new Dictionary<DOF, Dictionary<DataRange, float>>();
 
@@ -60,15 +36,6 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
         }
     }
 
-    public void StopCancelGenerating()
-    {
-        StopAllCoroutines();
-        commonWriter?.Flush();
-        commonWriter?.Close();
-        datasetPanel.UpdateCurrentSampleCnt(0);
-    }
-
-    StreamWriter commonWriter;
     /// <summary>
     /// Iterate the parameters and save image and data to disk
     /// </summary>
@@ -78,7 +45,7 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
         Debug.Log("Start Generaing...");
 
         // Prepare the data file
-        commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName);
+        commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName, streamDataGenerator);
 
         // Calculate the total number
         long totalCnt = 1;
@@ -169,104 +136,5 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
 
         Debug.Log("Finish Generaing!");
 
-    }
-
-    /// <summary>
-    /// Save a single image and store the para in the .csv file
-    /// </summary>
-    public void SaveSingleImage()
-    {
-        // Check whether can save this img currently
-        if (!IsValid)
-        {
-            WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
-            return;
-        }
-
-         // Get a unique image name and data
-        string imgName = null;
-        string data = null;
-        byte[] image = null;
-
-        streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
-        
-        // Save the data into disk
-        commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName);
-
-        // Write the data into csv file
-        commonWriter.WriteLine(data);
-
-        // Save the image into disk
-        System.IO.File.WriteAllBytes(
-                FolderName + '/' + imgName,
-                image);
-
-        // Close the writer
-        commonWriter.Flush();
-        commonWriter.Close();
-        commonWriter = null;
-
-        WinFormTools.MessageBox(IntPtr.Zero, "Saved Image!", "Finish", 0);
-        // LoadCSVFile(csvName);
-    }
-
-    public void SearchGeneratingDataset()
-    {
-        Debug.Log("Start Searching...");
-
-        StartCoroutine(SearchGeneratingCore());
-    }
-
-    IEnumerator SearchGeneratingCore()
-    {
-        // Prepare the data file
-        commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName);
-        int validCnt = 0;
-
-        // TODO: BFS DFS Search
-
-        WinFormTools.MessageBox(IntPtr.Zero, "Valid Image: " + validCnt, "Finish", 0);
-
-        Debug.Log("Finish Generaing!");
-        yield return null;
-    }
-
-    StreamWriter CreateOrOpenFolderFile(string folderName, string csvFileName)
-    {
-        // Check whether the folder exists
-        if (!Directory.Exists(folderName))
-        {
-            Directory.CreateDirectory(folderName);
-        }
-
-        string csvName = folderName + "/" + csvFileName;
-        StreamWriter writer;
-        if (File.Exists(csvName))
-        {
-            writer = new StreamWriter(csvName, true);
-        }
-        else
-        {
-            writer = new StreamWriter(csvName);
-            writer.WriteLine(streamDataGenerator.GenerateStreamFileHeader());
-        }
-        return writer;
-    }
-
-    /// <summary>
-    /// Load .csv file
-    /// </summary>
-    /// <param name="fileName"></param>
-    void LoadCSVFile(string fileName)
-    {
-        StreamReader reader = new StreamReader(fileName);
-
-        string[] texts = reader.ReadToEnd().Split("\n"[0]);
-        reader.Close();
-
-        foreach (var text in texts)
-        {
-            Debug.Log(text);
-        }
     }
 }

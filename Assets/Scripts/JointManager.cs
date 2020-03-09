@@ -123,20 +123,6 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
         {
             defaultAngles[item] = item.localEulerAngles;
         }
-
-        // Initialize publish
-        StartCoroutine(Initialize());   //??
-    }
-
-    /// <summary>
-    /// TODO: fix it
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator Initialize()
-    {
-        yield return new WaitForSeconds(2.0f);
-        UpdateJointObjTransform();
-        // JointUpdatePublisher?.Invoke();
     }
 
     void Update()

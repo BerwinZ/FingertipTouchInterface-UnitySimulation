@@ -9,69 +9,17 @@ using Common;
 /// 2. If two fingers are overlapped
 /// 3. The 2-d touch position of the one finger related to the other fingertip
 /// </summary>
-public class TouchDetection : MonoBehaviour, IFingerAction
+public class TouchDetection : TouchDetectionBase, IFingerAction
 {
-    // The type of this finger
-    [SerializeField]
-    Finger fingertipType = Finger.thumb;
-    public Finger FingerType => fingertipType;
-
-    public event BooleanEventHandler OnTouchStatusChange;
-    public event BooleanEventHandler OnOverlapStatusChange;
-    public event Vector2EventHandler OnTouchPositionChange;
-
-    // Whether this finger is isTouching by another
-    bool isTouching;
-    // Whether this finger is overlapped too much
-    bool isOverlapped;
-    // For thumb, the touch position is the X-Y position relative to the index finger coordinate. 
-    // For index finger, the touch position is the X-Y position relative to the thumb coordinate. 
-    Vector2 touchPosition;
-
-    public bool IsTouching
-    {
-        get => isTouching;
-        private set
-        {
-            isTouching = value;
-            OnTouchStatusChange?.Invoke(value);
-        }
-    }
-
-    public bool IsOverlapped
-    {
-        get => isOverlapped;
-        private set
-        {
-            isOverlapped = value;
-            OnOverlapStatusChange?.Invoke(value);
-        }
-    }
-
-    public Vector2 TouchPosition
-    {
-        get => touchPosition;
-        private set
-        {
-            touchPosition = value;
-            OnTouchPositionChange?.Invoke(value);
-        }
-    }
-
-    IJointMangerAction jointManager;
-
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        targetFingerType = (Finger)(((int)fingertipType + 1) % 2);
-
-        m_Collider = GetComponent<Collider>();
+        base.Start();   
 
         otherFinger = ScriptFind.FindTouchDetection(targetFingerType);
         otherCollider = otherFinger.transform.GetComponent<Collider>();
 
         // Get the touch point object
-        touchPointObj = transform.GetChild(0);
         touchPointObjMesh = touchPointObj.GetComponent<MeshRenderer>();
 
         // Register the events
@@ -81,10 +29,6 @@ public class TouchDetection : MonoBehaviour, IFingerAction
         IsTouching = false;
         IsOverlapped = false;
         TouchPosition = Vector2.zero;
-
-        // Subscribe the joint update event
-        jointManager = JointManager.Instance;
-        jointManager.OnJointUpdate += DetectTouchingStatus;
     }
 
     void ChangeTouchPointObjMesh(bool flag)
@@ -92,15 +36,7 @@ public class TouchDetection : MonoBehaviour, IFingerAction
         touchPointObjMesh.enabled = flag;
     }
 
-
-
     #region ParaforAccurateTouchDetection
-    // Type of the finger that is isTouching with
-    Finger targetFingerType;
-    // This collider
-    Collider m_Collider;
-    // The touch point
-    Transform touchPointObj;
     MeshRenderer touchPointObjMesh;
 
     // other finger's script
@@ -113,9 +49,6 @@ public class TouchDetection : MonoBehaviour, IFingerAction
 
     // Ray hit result          
     RaycastHit hitResult;
-
-    // Ray hit colliders
-    Collider[] hitColliders;
 
     // This capsule collider's radius, related to the collider obj's coordinate 
     float radius;
@@ -148,77 +81,37 @@ public class TouchDetection : MonoBehaviour, IFingerAction
     Vector2 worldTouchMM = Vector2.zero;
     #endregion
 
-    /// <summary>
-    /// Detect whether this finger is colliding with the other collider
-    /// </summary>
-    void DetectTouchingStatus()
+    public override void UpdateStatus(bool isTouch, bool isOverlapped)
     {
-        hitColliders = Physics.OverlapSphere(
-            otherCollider.ClosestPoint(m_Collider.bounds.center), 0.0001f);
-
-        bool flag = false;
-        foreach (var coll in hitColliders)
-        {
-            flag |= (coll == m_Collider);
-        }
-
-        if (flag)
-        {
-            IsTouching = true;
-            DetectOverlapStatus(otherCollider);
-        }
-        else
-        {
-            IsTouching = false;
-            IsOverlapped = false;
-        }
+        IsTouching = isTouch;
+        IsOverlapped = isOverlapped;
     }
 
-    /// <summary>
-    /// Accurate detecting the touch point and set other flags
-    /// </summary>
-    /// <param name="other">the other collider that collides with</param>
-    void DetectOverlapStatus(Collider other)
+    public override void UpdateTouchDotObj()
     {
-        if (other == null)
-            return;
-
         // Set the para for the Ray
-        ray.origin = other.bounds.center;
-        ray.direction = m_Collider.bounds.center - other.bounds.center;
+        ray.origin = otherCollider.bounds.center;
+        ray.direction = m_Collider.bounds.center - otherCollider.bounds.center;
 
         // Shoot the ray, get the touch point which is the intersection between ray and the collider
         m_Collider.Raycast(ray, out hitResult, 100.0f);
-
         touchPointObj.position = hitResult.point;
-
-        // Set overlapped true if the distance between two touch point is too large
-        IsOverlapped =
-            Vector3.Distance(
-                touchPointObj.position,
-                otherFinger.touchPointObj.position) > 1e-3;
-
-        // Calculate the touch point
-        if (!IsOverlapped)
-        {
-            CalcTouchPosition(other);
-        }
     }
 
     /// <summary>
     /// Calculate the touch point's coordinate and store them in the paramters. 
     /// </summary>
-    /// <param name="other"></param>
+    /// <param name="otherCollider"></param>
     /// <returns name="worldPositionMM"></returns>
-    void CalcTouchPosition(Collider other)
+    public override void CalcTouchPosition()
     {
         // Get the coordinate
         // X axis faces up (to world)
         // Y axis faces right (to world), the direction of axle of capsule
         // Z axis faces outside (to world)
 
-        radius = ((CapsuleCollider)other).radius;
-        wholeHeight = ((CapsuleCollider)other).height;
+        radius = ((CapsuleCollider)otherCollider).radius;
+        wholeHeight = ((CapsuleCollider)otherCollider).height;
         cylinderHeight = wholeHeight - 2 * radius;
         localVector = otherFinger.touchPointObj.localPosition;
 
@@ -254,7 +147,7 @@ public class TouchDetection : MonoBehaviour, IFingerAction
         }
 
         // Transfer it to the world scale parameters but from meter to millimeter
-        worldTouchMM = localTouchM * 1000.0f * other.transform.localScale.x;
+        worldTouchMM = localTouchM * 1000.0f * otherCollider.transform.localScale.x;
 
         TouchPosition = worldTouchMM;
     }

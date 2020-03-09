@@ -35,6 +35,13 @@ namespace Common
         max,
         step,
     }
+
+    public enum DatasetType
+    {
+        Single,
+        Iterated,
+        Search,
+    }
     #endregion
 
     #region FindScripts
@@ -63,12 +70,6 @@ namespace Common
     #endregion
 
     #region CommonInterface
-    public interface IStreamGeneratorAction
-    {
-        string GenerateStreamFileHeader();
-        void GenerateStreamFileData(out string data, out string imgName, out byte[] image);
-    }
-
     public interface IJointMangerAction
     {
         float GetJointValue(DOF joint);
@@ -86,26 +87,16 @@ namespace Common
         event Vector2EventHandler OnTouchPositionChange;
     }
 
-    public interface IDatasetGeneratorAction
+    public interface IStreamGeneratorAction
     {
-        string FolderName { get; set; }
-        string CSVFileName { get; set; }
-        void Initialize(IStreamGeneratorAction streamDataGenerator,
-                        IJointMangerAction jointManager,
-                        IPanelAction datasetPanel,
-                        IFingerAction finger,
-                        string folderName,
-                        string csvFileName);
-        void StartGeneratingDataset();
-        void StopCancelGenerating();
-        void SaveSingleImage();
-        void SearchGeneratingDataset();
+        string GenerateStreamFileHeader();
+        void GenerateStreamFileData(out string data, out string imgName, out byte[] image);
     }
 
-    public interface IGameAction
+    public interface IDatasetGeneratorAction
     {
-        event BooleanEventHandler OnDatasetPanelChange;
-        event StringEventHandler OnFolderNameChange;
+        void StartGeneratingDataset();
+        void StopOrCancelGeneratingDataset();
     }
 
     public interface IPanelAction
@@ -114,6 +105,15 @@ namespace Common
             out Dictionary<DOF, Dictionary<DataRange, float>> datasetPara);
         void UpdateTotalSampleCnt(long value);
         void UpdateCurrentSampleCnt(long value);
+    }
+
+    public interface IGameAction
+    {
+        void ExitApplication();
+        void ChangeFolderPath();
+        void TurnOnOffPanel(bool flag);
+        event BooleanEventHandler OnDatasetPanelChange;
+        event StringEventHandler OnFolderNameChange;
     }
     #endregion
 

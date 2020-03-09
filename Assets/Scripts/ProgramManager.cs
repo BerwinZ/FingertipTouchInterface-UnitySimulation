@@ -63,7 +63,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
     IFingerAction thumb;
     IFingerAction indexFinger;
     IStreamGeneratorAction streamDataGenerator;
-    IDatasetGeneratorAction datasetGenerator;
+    DatasetGeneratorBase datasetGenerator;
 
     public event BooleanEventHandler OnDatasetPanelChange;
     public event StringEventHandler OnFolderNameChange;
@@ -78,24 +78,10 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         streamDataGenerator = new StreamDataGenerator
         (jointManager, thumb, indexFinger, cameraToTakeShot, sameSizeWithWindow);
 
-        datasetGenerator = gameObject.AddComponent(typeof(DatasetGenerator)) as IDatasetGeneratorAction;
-        datasetGenerator.Initialize(streamDataGenerator, jointManager, datasetPanelScript, thumb, FolderName, CSVFileName);
-
-        OpenDatasetPanel(false);
+        TurnOnOffPanel(false);
         FolderName = "D:/Desktop/UnityData";
         // FolderName = Application.dataPath + "/Screenshots";
         CSVFileName = "data.csv";
-    }
-
-    public void Initialize(
-                    IStreamGeneratorAction streamDataGenerator,
-                    IJointMangerAction jointManager,
-                    IPanelAction datasetPanel,
-                    IFingerAction finger,
-                    string folderName,
-                    string csvFileName)
-    {
-        datasetGenerator.Initialize(streamDataGenerator, jointManager, datasetPanelScript, finger, folderName, csvFileName);
     }
 
     // Update is called once per frame
@@ -105,31 +91,59 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         {
             ExitApplication();
         }
-
     }
+
+    public void ConfigureGenerator(int type)
+    {
+        ConfigureGenerator((DatasetType)type);
+    }
+
+    public void ConfigureGenerator(DatasetType type)
+    {
+        if (datasetGenerator != null)
+        {
+            Destroy(datasetGenerator);
+            datasetGenerator = null;
+        }
+
+        switch (type)
+        {
+            case DatasetType.Single:
+                datasetGenerator = gameObject.AddComponent(typeof(SingleDatasetGenerator)) as DatasetGeneratorBase;
+                break;
+            case DatasetType.Iterated:
+                datasetGenerator = gameObject.AddComponent(typeof(IteratedDatasetGenerator)) as DatasetGeneratorBase;
+                break;
+            case DatasetType.Search:
+                datasetGenerator = gameObject.AddComponent(typeof(SearchDatasetGenerator)) as DatasetGeneratorBase;
+                break;
+            default:
+                break;
+        }
+        datasetGenerator?.Initialize(streamDataGenerator, jointManager, datasetPanelScript, thumb, FolderName, CSVFileName);
+        StartGeneratingDataset();
+    }
+
     public void StartGeneratingDataset()
     {
-        datasetGenerator.StartGeneratingDataset();
-    }
-    public void StopCancelGenerating()
-    {
-        datasetGenerator.StopCancelGenerating();
-        OpenDatasetPanel(false);
-    }
-    public void SaveSingleImage()
-    {
-        datasetGenerator.SaveSingleImage();
+        datasetGenerator?.StartGeneratingDataset();
     }
 
-    public void SearchGeneratingDataset()
+    public void StopOrCancelGeneratingDataset()
     {
-        datasetGenerator.SearchGeneratingDataset();
+        if (datasetGenerator != null)
+        {
+            datasetGenerator?.StopOrCancelGeneratingDataset();
+            Destroy(datasetGenerator);
+            datasetGenerator = null;
+        }
+        TurnOnOffPanel(false);
     }
 
     /// <summary>
     /// Open the dataset dialog
     /// </summary>
-    public void OpenDatasetPanel(bool flag)
+    public void TurnOnOffPanel(bool flag)
     {
         datasetPanel.SetActive(flag);
         OnDatasetPanelChange?.Invoke(flag);

@@ -47,11 +47,11 @@
     <Lollipop Orientation="Left" Position="0.211" />
   </Class>
   <Class Name="DrawBoard" Collapsed="true">
-    <Position X="13.75" Y="2" Width="1.5" />
+    <Position X="15" Y="2" Width="1.5" />
     <AssociationLine Name="thumb" Type="Common.IFingerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="14.5" Y="2.691" />
-        <Point X="14.5" Y="2.999" />
+        <Point X="15.75" Y="2.691" />
+        <Point X="15.75" Y="2.999" />
         <Point X="15.938" Y="2.999" />
         <Point X="15.938" Y="3.75" />
       </Path>
@@ -68,60 +68,35 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="JointManager" Collapsed="true">
-    <Position X="11.5" Y="2.5" Width="1.5" />
+    <Position X="9.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAUAAAAAACAAAYACSAgBRAAAAAAAAAAAAIAQAQAAAAA=</HashCode>
+      <HashCode>AAUAAAAAACAAAIACSAgBRAAAAAAAAAAAAIAQAQAAAAA=</HashCode>
       <FileName>Assets\Scripts\JointManager.cs</FileName>
     </TypeIdentifier>
     <Lollipop Orientation="Bottom" Position="0.461" />
   </Class>
   <Class Name="ProgramManager" Collapsed="true">
-    <Position X="4" Y="4" Width="2.75" />
+    <Position X="4" Y="4.75" Width="2.75" />
     <Members>
       <Field Name="datasetPanelScript" Hidden="true" />
       <Field Name="streamDataGenerator" Hidden="true" />
     </Members>
-    <AssociationLine Name="datasetGenerator" Type="Common.IDatasetGeneratorAction" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="5.125" Y="4.691" />
-        <Point X="5.125" Y="5.14" />
-        <Point X="2.5" Y="5.14" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.97" Y="-0.263" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>EDQAAAAAFSAAoQCAAEAAgKAAAAABAAAAgAIgEABAAAA=</HashCode>
+      <HashCode>EDQAAAAAFSAAIICAAEAAgIAAAAAAAAAAgAIhEABAAgA=</HashCode>
       <FileName>Assets\Scripts\ProgramManager.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="datasetPanelScript" />
       <Field Name="streamDataGenerator" />
-      <Field Name="datasetGenerator" />
     </ShowAsAssociation>
     <Lollipop Orientation="Left" Position="0.398" />
   </Class>
   <Class Name="TouchDetection" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="13.25" Y="4" Width="1.5" />
-    <AssociationLine Name="jointManager" Type="Common.IJointMangerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="13.25" Y="4.375" />
-        <Point X="12.875" Y="4.375" />
-        <Point X="12.875" Y="4.375" />
-        <Point X="12.25" Y="4.375" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.005" Y="-0.299" Height="0.182" Width="1.072" />
-      </MemberNameLabel>
-    </AssociationLine>
+    <Position X="13.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>DgAEiJCNCaAAAACAAAAgGAJKwEIIAABCiAAAAASAAAA=</HashCode>
+      <HashCode>DAAECJANCCAAAAAACAAgEABKAAAAAAAAiAAAAAAAAAA=</HashCode>
       <FileName>Assets\Scripts\TouchDetection.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="jointManager" />
-    </ShowAsAssociation>
     <Lollipop Orientation="Right" Position="0.1" />
   </Class>
   <Class Name="UIFolderPathIndicator" Collapsed="true">
@@ -144,7 +119,8 @@
     <AssociationLine Name="gameManager" Type="Common.IGameAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="7" Y="3.75" />
-        <Point X="7" Y="3.764" />
+        <Point X="6.625" Y="3.75" />
+        <Point X="6.625" Y="3.764" />
         <Point X="2.5" Y="3.764" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
@@ -161,7 +137,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="UIToggleActions" Collapsed="true">
-    <Position X="15.5" Y="2" Width="1.5" />
+    <Position X="16.75" Y="2" Width="1.5" />
     <AssociationLine Name="thumb" Type="Common.IFingerAction" FixedToPoint="true">
       <Path>
         <Point X="16.875" Y="2.691" />
@@ -179,64 +155,101 @@
       <Field Name="thumb" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="DatasetGenerator" Collapsed="true">
-    <Position X="1.75" Y="7.5" Width="1.5" />
-    <AssociationLine Name="finger" Type="Common.IFingerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+  <Class Name="TouchDetectionBase" Collapsed="true">
+    <Position X="13.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAgBAEAKAAAAAACAAACAIAwEIIAABCAAAAAAQAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\TouchDetectionBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.337" />
+  </Class>
+  <Class Name="DatasetGeneratorBase" Collapsed="true">
+    <Position X="2.25" Y="6.75" Width="1.5" />
+    <AssociationLine Name="finger" Type="Common.IFingerAction" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="2" Y="8.191" />
-        <Point X="2" Y="10.038" />
-        <Point X="16.906" Y="10.038" />
-        <Point X="16.906" Y="6.074" />
+        <Point X="3.5" Y="6.75" />
+        <Point X="3.5" Y="6.375" />
+        <Point X="11.792" Y="6.375" Type="JumpStart" />
+        <Point X="11.958" Y="6.375" Type="JumpEnd" />
+        <Point X="16.011" Y="6.375" Type="JumpStart" />
+        <Point X="16.177" Y="6.375" Type="JumpEnd" />
+        <Point X="16.417" Y="6.375" Type="JumpStart" />
+        <Point X="16.583" Y="6.375" Type="JumpEnd" />
+        <Point X="16.875" Y="6.375" />
+        <Point X="16.875" Y="6.074" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.819" Y="0.37" />
-      </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="datasetPanel" Type="Common.IPanelAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="datasetPanel" Type="Common.IPanelAction" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="8.062" />
-        <Point X="3.614" Y="8.062" />
-        <Point X="3.614" Y="9.562" />
-        <Point X="8" Y="9.562" />
+        <Point X="3.75" Y="7.312" />
+        <Point X="7.625" Y="7.312" />
+        <Point X="7.625" Y="9.062" />
+        <Point X="8" Y="9.062" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.2" Y="0.144" />
-      </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="streamDataGenerator" Type="Common.IStreamGeneratorAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="streamDataGenerator" Type="Common.IStreamGeneratorAction" FixedFromPoint="true">
       <Path>
-        <Point X="3.25" Y="7.812" />
-        <Point X="5.346" Y="7.812" />
-        <Point X="5.346" Y="7.812" />
-        <Point X="8" Y="7.812" />
+        <Point X="3.75" Y="6.938" />
+        <Point X="8" Y="6.938" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.176" Y="0.093" />
-      </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="jointManager" Type="Common.IJointMangerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="3.25" Y="7.688" />
-        <Point X="3.625" Y="7.688" />
-        <Point X="3.625" Y="5.992" />
-        <Point X="10.75" Y="5.992" />
-        <Point X="10.75" Y="5.247" />
+        <Point X="2.938" Y="6.75" />
+        <Point X="2.938" Y="5.975" />
+        <Point X="10.906" Y="5.975" />
+        <Point X="10.906" Y="5.247" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="2.289" Y="0.479" />
-      </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>ABAQAAAABQAAgYBAAAgAACCAAAABAAAAgAAQEABABAA=</HashCode>
-      <FileName>Assets\Scripts\BaseClass\DatasetGenerator.cs</FileName>
+      <HashCode>ABAAAAAABQAAAYBAAAgAAACAAAAAAAAAgAAQEABAAgA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\DatasetGeneratorBase.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="finger" />
-      <Field Name="jointManager" />
       <Field Name="datasetPanel" />
       <Field Name="streamDataGenerator" />
+      <Field Name="jointManager" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SingleDatasetGenerator" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\SingleDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IteratedDatasetGenerator" Collapsed="true">
+    <Position X="2.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\IteratedDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SearchDatasetGenerator" Collapsed="true">
+    <Position X="4.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAABAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\SearchDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TouchManager" Collapsed="true">
+    <Position X="13" Y="2.5" Width="1.5" />
+    <AssociationLine Name="indexFinger" Type="TouchDetectionBase">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.028" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAACAASAAAQCAAAAAAIAAAAAAAABCAAAAAACAAAA=</HashCode>
+      <FileName>Assets\Scripts\TouchManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="jointManager" />
+      <Field Name="thumb" />
+      <Field Name="indexFinger" />
+    </ShowAsAssociation>
   </Class>
   <Interface Name="Common.IStreamGeneratorAction">
     <Position X="8" Y="6.75" Width="2" />
@@ -260,16 +273,16 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="Common.IDatasetGeneratorAction">
-    <Position X="0.5" Y="4.75" Width="2" />
+    <Position X="0.5" Y="5.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>ABAAAAAABAAAgQAAAAAAACAAAAABAAAAgAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAgA=</HashCode>
       <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Common.IGameAction">
     <Position X="0.5" Y="3" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAAAAAAAAAAAAICAAAAAgAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
       <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
     </TypeIdentifier>
   </Interface>
