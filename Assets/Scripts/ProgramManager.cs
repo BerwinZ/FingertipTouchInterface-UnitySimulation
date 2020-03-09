@@ -7,6 +7,15 @@ using System.IO;
 using Common;
 using System;
 
+/// <summary>
+/// 1. Response to the UI interaction
+///     1.1 Change folder
+///     1.2 Open/close Panel
+///     1.3 Start Generating
+///     1.4 Stop Generating
+/// 2. Response to the keyboard interaction
+/// 3. Control genereator to generate dataset
+/// </summary>
 public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction, IGameAction
 {
     [Header("Screen Shot Settings")]
@@ -68,7 +77,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         CSVFileName = "data.csv";
 
         OpenDatasetPanel(false);
-        datasetGenerator = gameObject.AddComponent(typeof(DatasetManager)) as IDatasetGeneratorAction;
+        datasetGenerator = gameObject.AddComponent(typeof(DatasetGenerator)) as IDatasetGeneratorAction;
         Initialize(cameraToTakeShot,
                     sameSizeWithWindow,
                     streamDataGenerator,

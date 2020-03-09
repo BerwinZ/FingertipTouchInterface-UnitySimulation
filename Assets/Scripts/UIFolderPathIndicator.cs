@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using Common;
 
+/// <summary>
+/// Get path name from the GameManager
+/// </summary>
 public class UIFolderPathIndicator : MonoBehaviour
 {
     Text folderIndicator;

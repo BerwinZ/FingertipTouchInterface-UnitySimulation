@@ -9,11 +9,10 @@ using System;
 
 
 /// <summary>
-/// Handle the user's input, including
-/// 1. Save single image
-/// 2. Save serveral images according to the settings from dataset panel
+/// 1. Generate single image dataset
+/// 2. Generate several image dataset according to the search space
 /// </summary>
-public class DatasetManager : MonoBehaviour, IDatasetGeneratorAction
+public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
 {
     Camera cameraToTakeShot;
     bool sameSizeWithWindow;

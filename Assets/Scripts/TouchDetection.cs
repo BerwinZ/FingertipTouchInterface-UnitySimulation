@@ -7,7 +7,7 @@ using Common;
 /// Detect the touch action, including the following parameters
 /// 1. If touched
 /// 2. If two fingers are overlapped
-/// 3. The 2-d touch position of the thumb related to the index finger
+/// 3. The 2-d touch position of the one finger related to the other fingertip
 /// </summary>
 public class TouchDetection : MonoBehaviour, IFingerAction
 {

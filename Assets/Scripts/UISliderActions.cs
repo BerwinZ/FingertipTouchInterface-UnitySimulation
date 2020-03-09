@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Common;
 
 /// <summary>
-/// Send slider data to the JointManager.
+/// 1. Send slider data to the JointManager.
+/// 2. Get data from JoingManager when the program is in the searching status
 /// </summary>
 public class UISliderActions : MonoBehaviour
 {

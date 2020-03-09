@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Common;
 
+/// <summary>
+/// This class is used to judging whether can generate and generate line of .csv data
+/// </summary>
 public class StreamDataGeneratorProxy : Singleton<StreamDataGeneratorProxy>, IStreamGeneratorAction
 {
     IJointMangerAction jointManager;

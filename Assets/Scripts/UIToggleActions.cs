@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Common;
 
 /// <summary>
-/// Get flags from JointManger
+/// Get touching status from JointManger
 /// </summary>
 public class UIToggleActions : MonoBehaviour
 {

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Common;
 
 /// <summary>
-/// Draw the position of the touch point
+/// Draw the position of the thumb touch point
 /// </summary>
 public class DrawBoard : MonoBehaviour
 {

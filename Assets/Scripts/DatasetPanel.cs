@@ -7,9 +7,9 @@ using System;
 
 /// <summary>
 /// Control the action of the dataset panel.
-/// 1. Check the validation of the settings of dataset
-/// 2. Generate the dictionary of dataset setting from the UI
-/// 3. Update the generating process in panel
+/// 1. Check the whether the input filed is valid
+/// 2. Generate the dictionary of dataset search space parameters
+/// 3. Update UI of panel indicating the generating process 
 /// </summary>
 public class DatasetPanel : MonoBehaviour, IPanelAction
 {
