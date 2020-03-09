@@ -58,9 +58,11 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         }
     }
 
-    IStreamGeneratorAction streamDataGenerator;
     IJointMangerAction jointManager;
     IPanelAction datasetPanelScript;
+    IFingerAction thumb;
+    IFingerAction indexFinger;
+    IStreamGeneratorAction streamDataGenerator;
     IDatasetGeneratorAction datasetGenerator;
 
     public event BooleanEventHandler OnDatasetPanelChange;
@@ -68,40 +70,32 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
 
     void Start()
     {
-        streamDataGenerator = StreamDataGeneratorProxy.Instance;
         jointManager = JointManager.Instance;
         datasetPanelScript = datasetPanel.GetComponent<DatasetPanel>();
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+        indexFinger = ScriptFind.FindTouchDetection(Finger.index);
 
+        streamDataGenerator = new StreamDataGenerator
+        (jointManager, thumb, indexFinger, cameraToTakeShot, sameSizeWithWindow);
+
+        datasetGenerator = gameObject.AddComponent(typeof(DatasetGenerator)) as IDatasetGeneratorAction;
+        datasetGenerator.Initialize(streamDataGenerator, jointManager, datasetPanelScript, thumb, FolderName, CSVFileName);
+
+        OpenDatasetPanel(false);
         FolderName = "D:/Desktop/UnityData";
         // FolderName = Application.dataPath + "/Screenshots";
         CSVFileName = "data.csv";
-
-        OpenDatasetPanel(false);
-        datasetGenerator = gameObject.AddComponent(typeof(DatasetGenerator)) as IDatasetGeneratorAction;
-        Initialize(cameraToTakeShot,
-                    sameSizeWithWindow,
-                    streamDataGenerator,
-                    jointManager,
-                    datasetPanelScript,
-                    FolderName,
-                    CSVFileName);
     }
 
-    public void Initialize(Camera cameraToTakeShot,
-                    bool sameSizeWithWindow,
+    public void Initialize(
                     IStreamGeneratorAction streamDataGenerator,
                     IJointMangerAction jointManager,
                     IPanelAction datasetPanel,
+                    IFingerAction finger,
                     string folderName,
                     string csvFileName)
     {
-        datasetGenerator.Initialize(cameraToTakeShot,
-                                    sameSizeWithWindow,
-                                    streamDataGenerator,
-                                    jointManager,
-                                    datasetPanelScript,
-                                    FolderName,
-                                    CSVFileName);
+        datasetGenerator.Initialize(streamDataGenerator, jointManager, datasetPanelScript, finger, folderName, csvFileName);
     }
 
     // Update is called once per frame

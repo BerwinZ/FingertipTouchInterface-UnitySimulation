@@ -66,7 +66,7 @@ namespace Common
     public interface IStreamGeneratorAction
     {
         string GenerateStreamFileHeader();
-        bool GenerateStreamFileData(out string data, out string imgName);
+        void GenerateStreamFileData(out string data, out string imgName, out byte[] image);
     }
 
     public interface IJointMangerAction
@@ -90,11 +90,10 @@ namespace Common
     {
         string FolderName { get; set; }
         string CSVFileName { get; set; }
-        void Initialize(Camera cameraToTakeShot,
-                        bool sameSizeWithWindow,
-                        IStreamGeneratorAction streamDataGenerator,
+        void Initialize(IStreamGeneratorAction streamDataGenerator,
                         IJointMangerAction jointManager,
                         IPanelAction datasetPanel,
+                        IFingerAction finger,
                         string folderName,
                         string csvFileName);
         void StartGeneratingDataset();

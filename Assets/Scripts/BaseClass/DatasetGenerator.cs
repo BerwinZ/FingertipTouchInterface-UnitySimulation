@@ -9,33 +9,40 @@ using System;
 
 
 /// <summary>
+/// This class involves following functions:
 /// 1. Generate single image dataset
+///     1.1 Check the validation
+///     1.2 Generate stream data and save in disk
 /// 2. Generate several image dataset according to the search space
+///     2.1 Get parameters settings from panel
+///     2.2 Iterates each step, check the validation;
+///         If Valid, generate stream data and save in disk
+///         If not, pass
+///     2.3 Update UI indicator
+///     2.4 Provide a interface to stop the process any time
 /// </summary>
 public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
 {
-    Camera cameraToTakeShot;
-    bool sameSizeWithWindow;
     public string FolderName { get; set; }
     public string CSVFileName { get; set; }
-    IStreamGeneratorAction streamDataGenerator;
+    bool IsValid => finger.IsTouching && !finger.IsOverlapped;
+    IFingerAction finger;
     IJointMangerAction jointManager;
     IPanelAction datasetPanel;
+    IStreamGeneratorAction streamDataGenerator;
 
     // Start is called before the first frame update
-    public void Initialize(Camera cameraToTakeShot,
-                          bool sameSizeWithWindow,
-                          IStreamGeneratorAction streamDataGenerator,
-                          IJointMangerAction jointManager,
-                          IPanelAction datasetPanel,
-                          string folderName,
-                          string csvFileName)
+    public void Initialize(IStreamGeneratorAction streamDataGenerator,
+                           IJointMangerAction jointManager,
+                           IPanelAction datasetPanel,
+                           IFingerAction finger,
+                           string folderName,
+                           string csvFileName)
     {
-        this.cameraToTakeShot = cameraToTakeShot;
-        this.sameSizeWithWindow = sameSizeWithWindow;
         this.streamDataGenerator = streamDataGenerator;
         this.jointManager = jointManager;
         this.datasetPanel = datasetPanel;
+        this.finger = finger;
         this.FolderName = folderName;
         this.CSVFileName = csvFileName;
     }
@@ -130,19 +137,22 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
                                 // Get a unique image name and data
                                 string data = null;
                                 string imgName = null;
+                                byte[] image = null;
 
                                 // If could save, save image here
-                                if (streamDataGenerator.GenerateStreamFileData(out data, out imgName))
+                                if (IsValid)
                                 {
                                     validCnt++;
+
+                                    streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
+
+                                    // Save para data
+                                    commonWriter.WriteLine(data);
 
                                     // Save the image into disk
                                     System.IO.File.WriteAllBytes(
                                             FolderName + '/' + imgName,
-                                            CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
-
-                                    // Save para data
-                                    commonWriter.WriteLine(data);
+                                            image);
                                 }
                             }
                         }
@@ -166,27 +176,30 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
     /// </summary>
     public void SaveSingleImage()
     {
-        // Get a unique image name and data
-        string imgName = null;
-        string data = null;
-
         // Check whether can save this img currently
-        if (!streamDataGenerator.GenerateStreamFileData(out data, out imgName))
+        if (!IsValid)
         {
             WinFormTools.MessageBox(IntPtr.Zero, "Finger not touched or overlapped", "Cannot Save Image", 0);
             return;
         }
 
+         // Get a unique image name and data
+        string imgName = null;
+        string data = null;
+        byte[] image = null;
+
+        streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
+        
         // Save the data into disk
         commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName);
+
+        // Write the data into csv file
+        commonWriter.WriteLine(data);
 
         // Save the image into disk
         System.IO.File.WriteAllBytes(
                 FolderName + '/' + imgName,
-                CaptureScreen(cameraToTakeShot, sameSizeWithWindow));
-
-        // Write the data into csv file
-        commonWriter.WriteLine(data);
+                image);
 
         // Close the writer
         commonWriter.Flush();
@@ -256,52 +269,4 @@ public class DatasetGenerator : MonoBehaviour, IDatasetGeneratorAction
             Debug.Log(text);
         }
     }
-
-    /// <summary>
-    /// Capture the screen of the view of given camera and return the bytes
-    /// </summary>
-    /// <param name="cam"></param>
-    /// <returns></returns>
-    byte[] CaptureScreen(Camera cam, bool isFullSize)
-    {
-        // Create a rendering texture
-        RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0);
-
-        // Assign the rendering texture to the camera
-        cam.targetTexture = rt;
-        if (isFullSize)
-        {
-            Rect oldRect = cam.rect;
-            cam.rect = new Rect(0, 0, 1, 1);
-            cam.Render();
-            cam.rect = oldRect;
-        }
-        else
-        {
-            cam.Render();
-        }
-        RenderTexture.active = rt;
-
-        // Create a texture 2D to store the image
-        int imageWidth = isFullSize ? Screen.width : (int)(Screen.width * cam.rect.width);
-        int imageHeight = isFullSize ? Screen.height : (int)(Screen.height * cam.rect.height);
-        Texture2D screenShot = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
-
-        // Read pixels from rendering texture (rather than the screen) to texture 2D
-        // Note. the source coordinate is the image coordinate ((0,0) is in top-right) rather than the pixel coordinate ((0,0) is in the bottom-left)
-        int imagePosX = isFullSize ? 0 : (int)(Screen.width * cam.rect.x);
-        int imagePosY = isFullSize ? 0 : (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
-        Rect rect = new Rect(imagePosX, imagePosY, imageWidth, imageHeight);
-        screenShot.ReadPixels(rect, 0, 0);
-        screenShot.Apply();
-
-        // Unassign the rendering texture from the camera
-        cam.targetTexture = null;
-        RenderTexture.active = null;
-        Destroy(rt);
-
-        return screenShot.EncodeToPNG();
-    }
-
-
 }

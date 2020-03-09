@@ -4,7 +4,10 @@ using UnityEngine;
 using Common;
 
 /// <summary>
-/// This class is used to generate line of .csv data
+/// This class is used to generate 
+/// 1. Head line of .csv data
+/// 2. Line of .csv data
+/// 3. Image byte
 /// </summary>
 public class StreamDataGenerator : IStreamGeneratorAction
 {
@@ -26,6 +29,8 @@ public class StreamDataGenerator : IStreamGeneratorAction
         this.jointManager = jointManager;
         this.thumb = thumb;
         this.indexFinger = indexFinger;
+        this.cam = cam;
+        this.isFullSize = isFullSize;
     }
 
     public string GenerateStreamFileHeader()
@@ -45,10 +50,12 @@ public class StreamDataGenerator : IStreamGeneratorAction
         return header;
     }
 
-    public bool GenerateStreamFileData(out string data, out string imgName)
+    public void GenerateStreamFileData(
+            out string csvData, out string imgName, out byte[] image)
     {
         imgName = GenerateImageName();
-        data =
+        image = CaptureScreen();
+        csvData =
                jointManager.GetJointValue(DOF.gamma1).ToString("F2") + "," +
                jointManager.GetJointValue(DOF.gamma2).ToString("F2") + "," +
                jointManager.GetJointValue(DOF.gamma3).ToString("F2") + "," +
@@ -60,7 +67,6 @@ public class StreamDataGenerator : IStreamGeneratorAction
                indexFinger.TouchPosition.x.ToString("F2") + "," +
                indexFinger.TouchPosition.y.ToString("F2") + "," +
                imgName;
-        return true;
     }
 
     /// <summary>
