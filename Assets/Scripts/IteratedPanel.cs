@@ -11,7 +11,7 @@ using System;
 /// 2. Generate the dictionary of dataset search space parameters
 /// 3. Update UI of panel indicating the generating process 
 /// </summary>
-public class DatasetPanel : MonoBehaviour, IPanelAction
+public class IteratedPanel : MonoBehaviour, IPanelAction
 {
     Dictionary<DOF, Dictionary<DataRange, InputField>> inputFieldObj;
 

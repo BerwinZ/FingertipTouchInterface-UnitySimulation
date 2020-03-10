@@ -27,7 +27,11 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
 
     [Header("Dataset Menu")]
     [SerializeField]
-    GameObject datasetPanel = null;
+    GameObject iteratedPanelObj = null;
+
+    [SerializeField]
+    GameObject searchPanelObj = null;
+
 
     string foldername;
     public string FolderName
@@ -36,6 +40,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         set
         {
             foldername = value;
+            // Pass to the dataset generator
             if (datasetGenerator != null)
             {
                 datasetGenerator.FolderName = value;
@@ -51,6 +56,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         set
         {
             csvFileName = value;
+            // Pass to the dataset generator
             if (datasetGenerator != null)
             {
                 datasetGenerator.CSVFileName = value;
@@ -58,31 +64,49 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         }
     }
 
+    // Pass to dataset generator
     IJointMangerAction jointManager;
-    IPanelAction datasetPanelScript;
+    IPanelAction iteratedPanelScript;
+    IPanelAction searchPanelScript;
+    DatasetGeneratorBase datasetGenerator;
+
+    // Pass to stream data generator
     IFingerAction thumb;
     IFingerAction indexFinger;
     IStreamGeneratorAction streamDataGenerator;
-    DatasetGeneratorBase datasetGenerator;
 
+    // Event for outside class
     public event BooleanEventHandler OnDatasetPanelChange;
     public event StringEventHandler OnFolderNameChange;
 
     void Start()
     {
-        jointManager = JointManager.Instance;
-        datasetPanelScript = datasetPanel.GetComponent<DatasetPanel>();
-        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
-        indexFinger = ScriptFind.FindTouchDetection(Finger.index);
-
-        streamDataGenerator = new StreamDataGenerator
-        (jointManager, thumb, indexFinger, cameraToTakeShot, sameSizeWithWindow);
-
-        TurnOnOffPanel(false);
+        // Since No dataset generator created here (wait when the user select the generator mode), we could set the name without hesitation
         FolderName = "D:/Desktop/UnityData";
         // FolderName = Application.dataPath + "/Screenshots";
         CSVFileName = "data.csv";
+
+        jointManager = JointManager.Instance;
+        iteratedPanelScript = iteratedPanelObj.GetComponent<IteratedPanel>();
+        searchPanelScript = searchPanelObj.GetComponent<SearchPanel>();
+
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+        indexFinger = ScriptFind.FindTouchDetection(Finger.index);
+        streamDataGenerator = new StreamDataGenerator
+        (jointManager, thumb, indexFinger, cameraToTakeShot, sameSizeWithWindow);
+
+        TurnOnOffPanel(DatasetType.Iterated, false);
+        TurnOnOffPanel(DatasetType.Search, false);
+
+        StartCoroutine(Initialize());
     }
+
+    IEnumerator Initialize()
+    {
+        yield return new WaitForSeconds(0.5f);
+        OnFolderNameChange?.Invoke(FolderName);
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -93,6 +117,47 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         }
     }
 
+
+    /// <summary>
+    /// For unity editor assign
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="flag"></param>
+    public void TurnOnPanel(int type)
+    {
+        TurnOnOffPanel((DatasetType)type, true);
+    }
+
+    void TurnOffAllPanel()
+    {
+        TurnOnOffPanel(DatasetType.Single, false);
+        TurnOnOffPanel(DatasetType.Iterated, false);
+        TurnOnOffPanel(DatasetType.Search, false);
+    }
+
+    /// <summary>
+    /// Open the dataset dialog
+    /// </summary>
+    public void TurnOnOffPanel(DatasetType type, bool flag)
+    {
+        switch (type)
+        {
+            case DatasetType.Iterated:
+                iteratedPanelObj.SetActive(flag);
+                break;
+            case DatasetType.Search:
+                searchPanelObj.SetActive(flag);
+                break;
+            default:
+                break;
+        }
+        OnDatasetPanelChange?.Invoke(flag);
+    }
+
+    /// <summary>
+    /// For unity editor assign
+    /// </summary>
+    /// <param name="type"></param>
     public void ConfigureGenerator(int type)
     {
         ConfigureGenerator((DatasetType)type);
@@ -106,6 +171,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
             datasetGenerator = null;
         }
 
+        IPanelAction activePanelScript = null;
         switch (type)
         {
             case DatasetType.Single:
@@ -113,14 +179,22 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
                 break;
             case DatasetType.Iterated:
                 datasetGenerator = gameObject.AddComponent(typeof(IteratedDatasetGenerator)) as DatasetGeneratorBase;
+                activePanelScript = iteratedPanelScript;
                 break;
             case DatasetType.Search:
                 datasetGenerator = gameObject.AddComponent(typeof(SearchDatasetGenerator)) as DatasetGeneratorBase;
+                activePanelScript = searchPanelScript;
                 break;
             default:
                 break;
         }
-        datasetGenerator?.Initialize(streamDataGenerator, jointManager, datasetPanelScript, thumb, FolderName, CSVFileName);
+        datasetGenerator?.Initialize(
+                                    streamDataGenerator,
+                                    jointManager,
+                                    activePanelScript,
+                                    thumb,
+                                    FolderName,
+                                    CSVFileName);
         StartGeneratingDataset();
     }
 
@@ -137,23 +211,16 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
             Destroy(datasetGenerator);
             datasetGenerator = null;
         }
-        TurnOnOffPanel(false);
+        TurnOffAllPanel();
     }
 
-    /// <summary>
-    /// Open the dataset dialog
-    /// </summary>
-    public void TurnOnOffPanel(bool flag)
-    {
-        datasetPanel.SetActive(flag);
-        OnDatasetPanelChange?.Invoke(flag);
-    }
 
     /// <summary>
     /// Exit the application
     /// </summary>
     public void ExitApplication()
     {
+        datasetGenerator?.StopOrCancelGeneratingDataset();
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else

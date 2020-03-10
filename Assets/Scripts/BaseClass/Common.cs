@@ -109,9 +109,9 @@ namespace Common
 
     public interface IGameAction
     {
+        void TurnOnOffPanel(DatasetType type, bool flag);
         void ExitApplication();
         void ChangeFolderPath();
-        void TurnOnOffPanel(bool flag);
         event BooleanEventHandler OnDatasetPanelChange;
         event StringEventHandler OnFolderNameChange;
     }

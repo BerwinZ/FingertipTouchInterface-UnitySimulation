@@ -83,4 +83,24 @@ public abstract class DatasetGeneratorBase : MonoBehaviour, IDatasetGeneratorAct
             Debug.Log(text);
         }
     }
+
+    public virtual void SaveStreamDataToDisk()
+    {
+        if(commonWriter == null)
+            return;
+
+        string data = null;
+        string imgName = null;
+        byte[] image = null;
+
+        streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
+
+        // Save para data
+        commonWriter.WriteLine(data);
+
+        // Save the image into disk
+        System.IO.File.WriteAllBytes(
+                FolderName + '/' + imgName,
+                image);
+    }
 }
