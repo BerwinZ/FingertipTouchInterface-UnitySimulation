@@ -21,23 +21,10 @@ public class SingleDatasetGenerator : DatasetGeneratorBase
             return;
         }
 
-         // Get a unique image name and data
-        string imgName = null;
-        string data = null;
-        byte[] image = null;
-
-        streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
-        
         // Save the data into disk
         commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName, streamDataGenerator);
 
-        // Write the data into csv file
-        commonWriter.WriteLine(data);
-
-        // Save the image into disk
-        System.IO.File.WriteAllBytes(
-                FolderName + '/' + imgName,
-                image);
+        SaveStreamDataToDisk();
 
         // Close the writer
         commonWriter.Flush();

@@ -26,6 +26,8 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
     int validCnt;
     float step;
     float[] para = null;
+    float[] min_bound = new float[] { -15, -15, -15, -15, -15, -15 };
+    float[] max_bound = new float[] { 15, 15, 15, 15, 15, 15 };
     IEnumerator SearchGeneratingCore()
     {
         // Prepare the data file
@@ -66,6 +68,12 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
         return str;
     }
 
+    bool InBoundary(int paraIndex, float value)
+    {
+        return min_bound[paraIndex] <= value &&
+                value <= max_bound[paraIndex];
+    }
+
     IEnumerator DFS()
     {
         // Set the joint value
@@ -94,7 +102,8 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
                 yield return null;
 
                 para[i] += step;
-                if (!closedList.Contains(ConvertString(para)))
+                if (!closedList.Contains(ConvertString(para)) &&
+                    InBoundary(i, para[i]))
                 {
                     closedList.Add(ConvertString(para));
                     yield return StartCoroutine(DFS());
@@ -102,7 +111,8 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
                 para[i] -= step;
 
                 para[i] -= step;
-                if (!closedList.Contains(ConvertString(para)))
+                if (!closedList.Contains(ConvertString(para)) &&
+                    InBoundary(i, para[i]))
                 {
                     closedList.Add(ConvertString(para));
                     yield return StartCoroutine(DFS());

@@ -53,7 +53,7 @@ public abstract class DatasetGeneratorBase : MonoBehaviour, IDatasetGeneratorAct
             Directory.CreateDirectory(folderName);
         }
 
-        string csvName = folderName + "/" + csvFileName;
+        string csvName = Path.Combine(folderName, csvFileName);
         StreamWriter writer;
         if (File.Exists(csvName))
         {
@@ -97,10 +97,10 @@ public abstract class DatasetGeneratorBase : MonoBehaviour, IDatasetGeneratorAct
 
         // Save para data
         commonWriter.WriteLine(data);
+        commonWriter.Flush();
 
         // Save the image into disk
         System.IO.File.WriteAllBytes(
-                FolderName + '/' + imgName,
-                image);
+                Path.Combine(FolderName, imgName), image);
     }
 }

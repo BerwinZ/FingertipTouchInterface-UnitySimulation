@@ -101,25 +101,11 @@ public class IteratedDatasetGenerator : DatasetGeneratorBase
                                 // yield return new WaitForSeconds(0.05f);
                                 yield return null;
 
-                                // Get a unique image name and data
-                                string data = null;
-                                string imgName = null;
-                                byte[] image = null;
-
                                 // If could save, save image here
                                 if (IsValid)
                                 {
                                     validCnt++;
-
-                                    streamDataGenerator.GenerateStreamFileData(out data, out imgName, out image);
-
-                                    // Save para data
-                                    commonWriter.WriteLine(data);
-
-                                    // Save the image into disk
-                                    System.IO.File.WriteAllBytes(
-                                            FolderName + '/' + imgName,
-                                            image);
+                                    SaveStreamDataToDisk();
                                 }
                             }
                         }
