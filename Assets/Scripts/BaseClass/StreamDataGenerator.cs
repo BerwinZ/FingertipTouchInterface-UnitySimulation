@@ -62,10 +62,10 @@ public class StreamDataGenerator : IStreamGeneratorAction
                jointManager.GetJointValue(DOF.alpha1).ToString("F2") + "," +
                jointManager.GetJointValue(DOF.alpha2).ToString("F2") + "," +
                jointManager.GetJointValue(DOF.beta).ToString("F2") + "," +
-               thumb.TouchPosition.x.ToString("F2") + "," +
-               thumb.TouchPosition.y.ToString("F2") + "," +
-               indexFinger.TouchPosition.x.ToString("F2") + "," +
-               indexFinger.TouchPosition.y.ToString("F2") + "," +
+               thumb.TouchPosition.x.ToString("F0") + "," +
+               thumb.TouchPosition.y.ToString("F0") + "," +
+               indexFinger.TouchPosition.x.ToString("F0") + "," +
+               indexFinger.TouchPosition.y.ToString("F0") + "," +
                imgName;
     }
 
