@@ -77,6 +77,7 @@ namespace Common
         event VoidEventHandler OnJointUpdate;
     }
 
+    // TODO: Consider to use some anonymous for event
     public interface IFingerAction
     {
         bool IsTouching { get; }

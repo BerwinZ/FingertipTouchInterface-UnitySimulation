@@ -31,6 +31,32 @@ public class StreamDataGenerator : IStreamGeneratorAction
         this.indexFinger = indexFinger;
         this.cam = cam;
         this.isFullSize = isFullSize;
+        ConfigureRenderSettings();
+    }
+
+    RenderTexture _rt;
+    Rect _oldRect, _tmpRect, _imgSaveRect;
+    Texture2D _screenShot;
+    void ConfigureRenderSettings()
+    {
+        // Create a rendering texture
+        _rt = new RenderTexture(Screen.width, Screen.height, 0);
+
+        // Store the previous rect settings
+        _oldRect = cam.rect;
+        _tmpRect = new Rect(0, 0, 1, 1);
+
+        // Set the size of texture 2D
+        int imageWidth = isFullSize ? Screen.width : (int)(Screen.width * cam.rect.width);
+        int imageHeight = isFullSize ? Screen.height : (int)(Screen.height * cam.rect.height);
+
+        // Create a texture 2D to store the image
+        _screenShot = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
+
+        // Create the rect for read pixel
+        int imagePosX = isFullSize ? 0 : (int)(Screen.width * cam.rect.x);
+        int imagePosY = isFullSize ? 0 : (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
+        _imgSaveRect = new Rect(imagePosX, imagePosY, imageWidth, imageHeight);
     }
 
     public string GenerateStreamFileHeader()
@@ -91,42 +117,29 @@ public class StreamDataGenerator : IStreamGeneratorAction
     /// <returns></returns>
     byte[] CaptureScreen()
     {
-        // Create a rendering texture
-        RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 0);
-
         // Assign the rendering texture to the camera
-        cam.targetTexture = rt;
+        cam.targetTexture = _rt;
         if (isFullSize)
         {
-            Rect oldRect = cam.rect;
-            cam.rect = new Rect(0, 0, 1, 1);
+            cam.rect = _tmpRect;
             cam.Render();
-            cam.rect = oldRect;
+            cam.rect = _oldRect;
         }
         else
         {
             cam.Render();
         }
-        RenderTexture.active = rt;
-
-        // Create a texture 2D to store the image
-        int imageWidth = isFullSize ? Screen.width : (int)(Screen.width * cam.rect.width);
-        int imageHeight = isFullSize ? Screen.height : (int)(Screen.height * cam.rect.height);
-        Texture2D screenShot = new Texture2D(imageWidth, imageHeight, TextureFormat.RGB24, false);
+        RenderTexture.active = _rt;
 
         // Read pixels from rendering texture (rather than the screen) to texture 2D
         // Note. the source coordinate is the image coordinate ((0,0) is in top-right) rather than the pixel coordinate ((0,0) is in the bottom-left)
-        int imagePosX = isFullSize ? 0 : (int)(Screen.width * cam.rect.x);
-        int imagePosY = isFullSize ? 0 : (int)(Screen.height - (Screen.height * cam.rect.y + imageHeight));
-        Rect rect = new Rect(imagePosX, imagePosY, imageWidth, imageHeight);
-        screenShot.ReadPixels(rect, 0, 0);
-        screenShot.Apply();
+        _screenShot.ReadPixels(_imgSaveRect, 0, 0);
+        _screenShot.Apply();
 
         // Unassign the rendering texture from the camera
         cam.targetTexture = null;
         RenderTexture.active = null;
-        UnityEngine.Object.Destroy(rt);
 
-        return screenShot.EncodeToPNG();
+        return _screenShot.EncodeToPNG();
     }
 }

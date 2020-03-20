@@ -23,9 +23,9 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
         }
     }
 
-    Queue<float[]> _openList;
-    HashSet<float[]> _closedListBFS;
+    Queue<string> _openList;
     HashSet<string> _closedList;
+    string _checkPattern;
     int _validCnt;
     float _stepLength;
     float[] _para = null;
@@ -36,18 +36,18 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
         // Prepare the data file
         commonWriter = CreateOrOpenFolderFile(FolderName, CSVFileName, streamDataGenerator);
 
-        _openList = new Queue<float[]>();
-        _closedListBFS = new HashSet<float[]>();
+        _openList = new Queue<string>();
+        _closedList = new HashSet<string>();
         _validCnt = 0;
 
         // BFS Search
         _para = new float[] { 0, 0, 0, 0, 0, 0 };
-        _openList.Enqueue((float[])_para.Clone());
+        _openList.Enqueue(ConvertString(_para));
 
         while (_openList.Count > 0)
         {
-            _para = _openList.Dequeue();
-            _closedListBFS.Add((float[])_para.Clone());
+            _para = ConvertFloat(_openList.Dequeue());
+            _closedList.Add(ConvertString(_para));
 
             // Check current para, set the joint value
             for (int i = 0; i < _para.Length; i++)
@@ -72,22 +72,24 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
                     yield return null;
 
                     _para[i] += _stepLength;
-                    if (InBoundary(i, _para[i]) && 
-                        !_closedListBFS.Contains(_para) &&
-                        !_openList.Contains(_para))
+                    _checkPattern = ConvertString(_para);
+                    if (InBoundary(i, _para[i]) &&
+                        !_closedList.Contains(_checkPattern) &&
+                        !_openList.Contains(_checkPattern))
                     {
-                        _openList.Enqueue((float[])_para.Clone());
+                        _openList.Enqueue(_checkPattern);
                     }
                     _para[i] -= _stepLength;
 
                     yield return null;
 
                     _para[i] -= _stepLength;
-                    if (InBoundary(i, _para[i]) && 
-                        !_closedListBFS.Contains(_para) &&
-                        !_openList.Contains(_para))
+                    _checkPattern = ConvertString(_para);
+                    if (InBoundary(i, _para[i]) &&
+                        !_closedList.Contains(_checkPattern) &&
+                        !_openList.Contains(_checkPattern))
                     {
-                        _openList.Enqueue((float[])_para.Clone());
+                        _openList.Enqueue(_checkPattern);
                     }
                     _para[i] += _stepLength;
                 }
@@ -144,6 +146,17 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
             }
         }
         return str;
+    }
+
+    float[] ConvertFloat(string str)
+    {
+        string[] strs = str.Split(',');
+        float[] data = new float[6];
+        for (int i = 0; i < data.Length; i++)
+        {
+            float.TryParse(strs[i], out data[i]);
+        }
+        return data;
     }
 
     bool InBoundary(int paraIndex, float value)
