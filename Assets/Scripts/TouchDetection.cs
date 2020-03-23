@@ -19,6 +19,11 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
         otherFinger = ScriptFind.FindTouchDetection(targetFingerType);
         otherCollider = otherFinger.transform.GetComponent<Collider>();
 
+        // Get the parameters for the other collider
+        _capsuleRadius = ((CapsuleCollider)otherCollider).radius;
+        _capsuleHeight = ((CapsuleCollider)otherCollider).height;
+        _cylinderHeight = _capsuleHeight - 2 * _capsuleRadius;
+
         // Get the touch point object
         touchPointObjMesh = touchPointObj.GetComponent<MeshRenderer>();
 
@@ -40,40 +45,40 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
     Collider otherCollider;
 
     // Ray to intersect with this collider  
-    Ray ray = new Ray();
+    Ray _ray = new Ray();
 
     // Ray hit result          
-    RaycastHit hitResult;
+    RaycastHit _hitResult;
 
-    // This capsule collider's radius, related to the collider obj's coordinate 
-    float radius;
+    // This capsule collider's _capsuleRadius, related to the collider obj's coordinate 
+    float _capsuleRadius;
 
     // This capsule collider's whole height, related to the collider obj's coordinate        
-    float wholeHeight;
+    float _capsuleHeight;
 
     // This capsule collider's cylinder height, related to the collider obj's coordinate  
-    float cylinderHeight;
+    float _cylinderHeight;
 
     // The position of touch point in the collider obj's coordinate
-    Vector3 localVector;
+    Vector3 _localVector;
 
-    // The projection of localVector in the collider obj's x-z plane (still in collider obj's coordinate) 
-    Vector3 localProj;
+    // The projection of _localVector in the collider obj's x-z plane (still in collider obj's coordinate) 
+    Vector3 _localProj;
 
-    // The vector of (localVector - sphere point)
-    Vector3 sphereVector;
+    // The vector of (_localVector - sphere point)
+    Vector3 _sphereVector;
 
-    // The angle between localProj and the collider obj's z axis (still in collider obj's coordinate)
-    float verticalAngle;
+    // The angle between _localProj and the collider obj's z axis (still in collider obj's coordinate)
+    float _verticalAngle;
 
-    // The angle between localProj and the collider obj's z axis (still in collider obj's coordinate)
-    float horizontalAngle;
+    // The angle between _localProj and the collider obj's z axis (still in collider obj's coordinate)
+    float _horizontalAngle;
 
     // Touch point position in collider obj's coordinate (meter)
-    Vector2 localTouchM = Vector2.zero;
+    Vector2 _localTouchM = Vector2.zero;
 
     // Touch point position in world coordinate (millimeter)
-    Vector2 worldTouchMM = Vector2.zero;
+    Vector2 _worldTouchMM = Vector2.zero;
     #endregion
 
     public override void UpdateStatus(bool isTouch, bool isOverlapped)
@@ -85,12 +90,12 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
     public override void UpdateTouchDotObj()
     {
         // Set the para for the Ray
-        ray.origin = otherCollider.bounds.center;
-        ray.direction = m_Collider.bounds.center - otherCollider.bounds.center;
+        _ray.origin = otherCollider.bounds.center;
+        _ray.direction = m_Collider.bounds.center - otherCollider.bounds.center;
 
-        // Shoot the ray, get the touch point which is the intersection between ray and the collider
-        m_Collider.Raycast(ray, out hitResult, 100.0f);
-        touchPointObj.position = hitResult.point;
+        // Shoot the _ray, get the touch point which is the intersection between _ray and the collider
+        m_Collider.Raycast(_ray, out _hitResult, 100.0f);
+        touchPointObj.position = _hitResult.point;
     }
 
     /// <summary>
@@ -104,46 +109,42 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
         // X axis faces up (to world)
         // Y axis faces right (to world), the direction of axle of capsule
         // Z axis faces outside (to world)
+        _localVector = otherFinger.touchPointObj.localPosition;
 
-        radius = ((CapsuleCollider)otherCollider).radius;
-        wholeHeight = ((CapsuleCollider)otherCollider).height;
-        cylinderHeight = wholeHeight - 2 * radius;
-        localVector = otherFinger.touchPointObj.localPosition;
-
-        if (localVector.y > -cylinderHeight / 2 &&
-            localVector.y < cylinderHeight / 2)     // In the cylinder part
+        if (_localVector.y > -_cylinderHeight / 2 &&
+            _localVector.y < _cylinderHeight / 2)     // In the cylinder part
         {
-            localTouchM.x = localVector.y;
+            _localTouchM.x = _localVector.y;
 
-            // Project the localVector to the x-z plane
-            localProj = Vector3.ProjectOnPlane(localVector, Vector3.up);
-            verticalAngle = (localVector.x > 0) ? 1 : -1;
-            verticalAngle *= Vector3.Angle(Vector3.forward, localProj);
-            localTouchM.y = verticalAngle * Mathf.PI * radius / 180.0f;
+            // Project the _localVector to the x-z plane
+            _localProj = Vector3.ProjectOnPlane(_localVector, Vector3.up);
+            _verticalAngle = (_localVector.x > 0) ? 1 : -1;
+            _verticalAngle *= Vector3.Angle(Vector3.forward, _localProj);
+            _localTouchM.y = _verticalAngle * Mathf.PI * _capsuleRadius / 180.0f;
         }
         else
         {
             // Use sphere vector here
-            sphereVector = (localVector.y > 0) ?
-                            localVector - new Vector3(0, cylinderHeight / 2, 0) :
-                            localVector - new Vector3(0, -cylinderHeight / 2, 0);
+            _sphereVector = (_localVector.y > 0) ?
+                            _localVector - new Vector3(0, _cylinderHeight / 2, 0) :
+                            _localVector - new Vector3(0, -_cylinderHeight / 2, 0);
 
             // Project sphere vector to the y-z plane 
-            localProj = Vector3.ProjectOnPlane(sphereVector, Vector3.right);
-            horizontalAngle = Vector3.Angle(Vector3.forward, localProj);
-            localTouchM.x = (localVector.y > 0) ? 1 : -1;
-            localTouchM.x *= horizontalAngle * Mathf.PI * radius / 180.0f + cylinderHeight / 2;
+            _localProj = Vector3.ProjectOnPlane(_sphereVector, Vector3.right);
+            _horizontalAngle = Vector3.Angle(Vector3.forward, _localProj);
+            _localTouchM.x = (_localVector.y > 0) ? 1 : -1;
+            _localTouchM.x *= _horizontalAngle * Mathf.PI * _capsuleRadius / 180.0f + _cylinderHeight / 2;
 
             // Project sphere vector to the x-z plane 
-            localProj = Vector3.ProjectOnPlane(sphereVector, Vector3.up);
-            verticalAngle = (localProj.x > 0) ? 1 : -1;
-            verticalAngle *= Vector3.Angle(Vector3.forward, localProj);
-            localTouchM.y = verticalAngle * Mathf.PI * radius / 180.0f;
+            _localProj = Vector3.ProjectOnPlane(_sphereVector, Vector3.up);
+            _verticalAngle = (_localProj.x > 0) ? 1 : -1;
+            _verticalAngle *= Vector3.Angle(Vector3.forward, _localProj);
+            _localTouchM.y = _verticalAngle * Mathf.PI * _capsuleRadius / 180.0f;
         }
 
         // Transfer it to the world scale parameters but from meter to millimeter
-        worldTouchMM = localTouchM * 1000.0f * otherCollider.transform.localScale.x;
+        _worldTouchMM = _localTouchM * 1000.0f * otherCollider.transform.localScale.x;
 
-        TouchPosition = worldTouchMM;
+        TouchPosition = _worldTouchMM;
     }
 }

@@ -28,50 +28,64 @@ public class TouchManager : MonoBehaviour
     }
 
     // Ray hit colliders
-    Collider[] hitColliders;
-    bool isTouching, isOverlapped;
+    Collider[] _hitColliders;
+    bool _isTouching, _isOverlapped;
+    bool IsValid => _isTouching && !_isOverlapped;
+
     /// <summary>
     /// Detect whether this finger is colliding with the other collider
     /// </summary>
     void DetectTouchingStatus(object sender, EventArgs e)
     {
-        hitColliders = Physics.OverlapSphere(
+        _isTouching = IsIntersect(
             indexFinger.m_Collider.ClosestPoint(thumb.m_Collider.bounds.center),
-            0.0001f);
-
-        isTouching = false;
-        foreach (var coll in hitColliders)
-        {
-            isTouching |= (coll == thumb.m_Collider);
-        }
-
+            thumb.m_Collider);
+    
         // Detect touching and overlapped
-        if (isTouching)
+        if (_isTouching)
         {
-            thumb.UpdateTouchDotObj();
-            indexFinger.UpdateTouchDotObj();
-            isOverlapped = DetectOverlapStatus();
+            _isOverlapped = DetectOverlapStatus();
         }
         else
         {
-            isOverlapped = false;
+            _isOverlapped = false;
         }
 
         // Set status
-        thumb.UpdateStatus(isTouching, isOverlapped);
-        indexFinger.UpdateStatus(isTouching, isOverlapped);
+        thumb.UpdateStatus(_isTouching, _isOverlapped);
+        indexFinger.UpdateStatus(_isTouching, _isOverlapped);
 
-        // Calculate touch position
-        if (isTouching && !isOverlapped)
+        // Calculate touch position if is valid
+        if (IsValid)
         {
             thumb.CalcTouchPosition();
             indexFinger.CalcTouchPosition();
         }
     }
 
+    bool IsIntersect(Vector3 pos, Collider coll)
+    {
+        _hitColliders = Physics.OverlapSphere(pos, 0.0001f);
+        foreach (var hitColl in _hitColliders)
+        {
+            if(coll == hitColl)
+                return true;
+        }
+        return false;
+    }
+
     bool DetectOverlapStatus()
     {
-        // Set overlapped true if the distance between two touch point is too large
+        if(IsIntersect(indexFinger.m_Collider.bounds.center, thumb.m_Collider) ||
+           IsIntersect(thumb.m_Collider.bounds.center, indexFinger.m_Collider))
+           {
+               return true;
+           }
+
+        // Check the dot obj's relative position
+        thumb.UpdateTouchDotObj();
+        indexFinger.UpdateTouchDotObj();
+
         return Vector3.Distance(
                 thumb.touchPointObj.position,
                 indexFinger.touchPointObj.position) > 1e-3;

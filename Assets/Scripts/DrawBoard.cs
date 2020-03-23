@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Common;
 
 /// <summary>
-/// Draw the position of the _thumb touch _point
+/// Draw the position of the thumb touch _point
 /// </summary>
 public class DrawBoard : MonoBehaviour
 {
@@ -16,8 +16,9 @@ public class DrawBoard : MonoBehaviour
     Image _pointMesh;
     Text _thumbPosText;
     Text _indexPosText;
-    IFingerAction _thumb;
-    IFingerAction _index;
+    
+    IFingerAction thumb;
+    IFingerAction index;
 
     bool _isTouching;
     bool _isOverlapped;
@@ -31,30 +32,30 @@ public class DrawBoard : MonoBehaviour
         _thumbPosText = transform.GetChild(2).GetComponent<Text>();
         _indexPosText = transform.GetChild(3).GetComponent<Text>();
 
-        _thumb = ScriptFind.FindTouchDetection(Finger.thumb);
-        _thumb.OnTouchStatusChange += delegate (object sender, bool flag)
+        thumb = ScriptFind.FindTouchDetection(Finger.thumb);
+        thumb.OnTouchStatusChange += delegate (object sender, bool flag)
         {
             _isTouching = flag;
             ChangeDotColor();
         };
-        _thumb.OnOverlapStatusChange += delegate (object sender, bool flag)
+        thumb.OnOverlapStatusChange += delegate (object sender, bool flag)
         {
             _isOverlapped = flag;
             ChangeDotColor();
         };
-        _thumb.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
+        thumb.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
         {
             _pointPos.x = touchPos.x * movScaler;
             _pointPos.y = touchPos.y * movScaler;
             _point.localPosition = _pointPos;
         };
-        _thumb.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
+        thumb.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
         {
             _thumbPosText.text = "T(mm): " + touchPos;
         };
 
-        _index = ScriptFind.FindTouchDetection(Finger.index);
-        _index.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
+        index = ScriptFind.FindTouchDetection(Finger.index);
+        index.OnTouchPositionChange += delegate (object sender, Vector2 touchPos)
         {
             _indexPosText.text = " I(mm): " + touchPos;
         };
