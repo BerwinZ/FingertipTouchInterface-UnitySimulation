@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Common;
+using System;
 
 /// <summary>
 /// 1. Send slider data to the JointManager.
@@ -29,10 +30,10 @@ public class UISliderActions : MonoBehaviour
         jointManager = JointManager.Instance;
 
         gameManager.OnDatasetPanelChange += OnDatasetPanelOpen;
-        OnDatasetPanelOpen(false);
+        OnDatasetPanelOpen(this, false);
     }
 
-    void OnDatasetPanelOpen(bool flag)
+    void OnDatasetPanelOpen(object sender, bool flag)
     {
         // When the dataset panel doesn't open, send data to the joint
         if (!flag)
@@ -63,7 +64,7 @@ public class UISliderActions : MonoBehaviour
         text.text = slider.value.ToString("#0.0");
     }
 
-    void UpdateValue()
+    void UpdateValue(object sender, EventArgs e)
     {
         slider.value = jointManager.GetJointValue(handleType);
     }

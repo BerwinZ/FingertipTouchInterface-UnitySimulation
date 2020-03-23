@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using System;
 
 
 /// <summary>
@@ -92,11 +93,11 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
                     break;
             }
             UpdateJointObjTransform();
-            OnJointUpdate?.Invoke();
+            OnJointUpdate?.Invoke(this, null);
         }
     }
 
-    public event VoidEventHandler OnJointUpdate;
+    public event EventHandler OnJointUpdate;
 
     Transform[] indexFingerJoints;
     Transform[] thumbJoints;
@@ -130,7 +131,7 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
         if (controlInEditor)
         {
             UpdateJointObjTransform();
-            OnJointUpdate?.Invoke();
+            OnJointUpdate?.Invoke(this, null);
         }
     }
 

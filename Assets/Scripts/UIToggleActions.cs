@@ -41,7 +41,7 @@ public class UIToggleActions : MonoBehaviour
         }
     }
 
-    void ChangeToggleState(bool flag)
+    void ChangeToggleState(object sender, bool flag)
     {
         toggle.isOn = flag;
     }

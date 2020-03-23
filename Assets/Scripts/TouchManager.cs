@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using System;
 
 public class TouchManager : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class TouchManager : MonoBehaviour
     IEnumerator Initialize()
     {
         yield return new WaitForSeconds(0.5f);
-        DetectTouchingStatus();
+        DetectTouchingStatus(this, null);
     }
 
     // Ray hit colliders
@@ -32,7 +33,7 @@ public class TouchManager : MonoBehaviour
     /// <summary>
     /// Detect whether this finger is colliding with the other collider
     /// </summary>
-    void DetectTouchingStatus()
+    void DetectTouchingStatus(object sender, EventArgs e)
     {
         hitColliders = Physics.OverlapSphere(
             indexFinger.m_Collider.ClosestPoint(thumb.m_Collider.bounds.center),

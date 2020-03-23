@@ -14,7 +14,7 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
     // Start is called before the first frame update
     protected override void Start()
     {
-        base.Start();   
+        base.Start();
 
         otherFinger = ScriptFind.FindTouchDetection(targetFingerType);
         otherCollider = otherFinger.transform.GetComponent<Collider>();
@@ -23,17 +23,12 @@ public class TouchDetection : TouchDetectionBase, IFingerAction
         touchPointObjMesh = touchPointObj.GetComponent<MeshRenderer>();
 
         // Register the events
-        OnTouchStatusChange += ChangeTouchPointObjMesh;
+        OnTouchStatusChange += (sender, flag) => touchPointObjMesh.enabled = flag;
 
         // Set the values
         IsTouching = false;
         IsOverlapped = false;
         TouchPosition = Vector2.zero;
-    }
-
-    void ChangeTouchPointObjMesh(bool flag)
-    {
-        touchPointObjMesh.enabled = flag;
     }
 
     #region ParaforAccurateTouchDetection

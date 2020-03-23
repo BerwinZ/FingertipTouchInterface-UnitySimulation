@@ -62,36 +62,30 @@ namespace Common
     }
     #endregion
 
-    #region CommonDelegate
-    public delegate void VoidEventHandler();
-    public delegate void BooleanEventHandler(bool flag);
-    public delegate void StringEventHandler(string str);
-    public delegate void Vector2EventHandler(Vector2 pos);
-    #endregion
 
     #region CommonInterface
     public interface IJointMangerAction
     {
         float GetJointValue(DOF joint);
         void SetJointValue(DOF joint, float value);
-        event VoidEventHandler OnJointUpdate;
+        event EventHandler OnJointUpdate;
     }
 
-    // TODO: Consider to use some anonymous for event
     public interface IFingerAction
     {
         bool IsTouching { get; }
         bool IsOverlapped { get; }
         Vector2 TouchPosition { get; }
-        event BooleanEventHandler OnTouchStatusChange;
-        event BooleanEventHandler OnOverlapStatusChange;
-        event Vector2EventHandler OnTouchPositionChange;
+        event EventHandler<bool> OnTouchStatusChange;
+        event EventHandler<bool> OnOverlapStatusChange;
+        event EventHandler<Vector2> OnTouchPositionChange;
     }
 
     public interface IStreamGeneratorAction
     {
         string GenerateStreamFileHeader();
-        void GenerateStreamFileData(out string data, out string imgName, out byte[] image);
+        void GenerateStreamFileData(
+            out string data, out string imgName, out byte[] image);
     }
 
     public interface IDatasetGeneratorAction
@@ -113,8 +107,8 @@ namespace Common
         void TurnOnOffPanel(DatasetType type, bool flag);
         void ExitApplication();
         void ChangeFolderPath();
-        event BooleanEventHandler OnDatasetPanelChange;
-        event StringEventHandler OnFolderNameChange;
+        event EventHandler<bool> OnDatasetPanelChange;
+        event EventHandler<String> OnFolderNameChange;
     }
     #endregion
 

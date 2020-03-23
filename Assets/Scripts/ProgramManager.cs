@@ -45,7 +45,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
             {
                 datasetGenerator.FolderName = value;
             }
-            OnFolderNameChange?.Invoke(value);
+            OnFolderNameChange?.Invoke(this, value);
         }
     }
 
@@ -76,8 +76,8 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
     IStreamGeneratorAction streamDataGenerator;
 
     // Event for outside class
-    public event BooleanEventHandler OnDatasetPanelChange;
-    public event StringEventHandler OnFolderNameChange;
+    public event EventHandler<bool> OnDatasetPanelChange;
+    public event EventHandler<String> OnFolderNameChange;
 
     void Start()
     {
@@ -104,7 +104,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
     IEnumerator Initialize()
     {
         yield return new WaitForSeconds(0.5f);
-        OnFolderNameChange?.Invoke(FolderName);
+        OnFolderNameChange?.Invoke(this, FolderName);
     }
 
 
@@ -151,7 +151,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
             default:
                 break;
         }
-        OnDatasetPanelChange?.Invoke(flag);
+        OnDatasetPanelChange?.Invoke(this, flag);
     }
 
     /// <summary>

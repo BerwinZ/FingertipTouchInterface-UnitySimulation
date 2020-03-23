@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using System;
 
 public abstract class TouchDetectionBase : MonoBehaviour, IFingerAction
 {
@@ -15,9 +16,9 @@ public abstract class TouchDetectionBase : MonoBehaviour, IFingerAction
     // The touch point
     public Transform touchPointObj {get; private set; }
 
-    public event BooleanEventHandler OnTouchStatusChange;
-    public event BooleanEventHandler OnOverlapStatusChange;
-    public event Vector2EventHandler OnTouchPositionChange;
+    public event EventHandler<bool> OnTouchStatusChange;
+    public event EventHandler<bool> OnOverlapStatusChange;
+    public event EventHandler<Vector2> OnTouchPositionChange;
 
     // Whether this finger is isTouching by another
     bool isTouching;
@@ -33,7 +34,7 @@ public abstract class TouchDetectionBase : MonoBehaviour, IFingerAction
         protected set
         {
             isTouching = value;
-            OnTouchStatusChange?.Invoke(value);
+            OnTouchStatusChange?.Invoke(this, value);
         }
     }
 
@@ -43,7 +44,7 @@ public abstract class TouchDetectionBase : MonoBehaviour, IFingerAction
         protected set
         {
             isOverlapped = value;
-            OnOverlapStatusChange?.Invoke(value);
+            OnOverlapStatusChange?.Invoke(this, value);
         }
     }
 
@@ -53,7 +54,7 @@ public abstract class TouchDetectionBase : MonoBehaviour, IFingerAction
         protected set
         {
             touchPosition = value;
-            OnTouchPositionChange?.Invoke(value);
+            OnTouchPositionChange?.Invoke(this, value);
         }
     }
 

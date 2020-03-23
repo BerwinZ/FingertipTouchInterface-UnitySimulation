@@ -17,11 +17,9 @@ public class UIFolderPathIndicator : MonoBehaviour
     {
         folderIndicator = transform.GetComponent<Text>();
         gameManager = ProgramManager.Instance;
-        gameManager.OnFolderNameChange += UpdateText;
-    }
-
-    public void UpdateText(string foldername)
-    {
-        folderIndicator.text = foldername;
+        gameManager.OnFolderNameChange += delegate (object sender, string folderName)
+        {
+            folderIndicator.text = folderName;
+        };
     }
 }
