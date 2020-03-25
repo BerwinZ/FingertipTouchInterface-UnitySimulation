@@ -68,7 +68,13 @@ namespace Common
     {
         float GetJointValue(DOF joint);
         void SetJointValue(DOF joint, float value);
+        void SetJointsValues(float[] values);
         event EventHandler OnJointUpdate;
+    }
+
+    public interface ITouchManagerAction
+    {
+        event EventHandler<bool> OnTouchCalcFinish;
     }
 
     public interface IFingerAction

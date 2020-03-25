@@ -59,53 +59,60 @@ public class IteratedDatasetGenerator : DatasetGeneratorBase
         // Start iteration
         long currentCnt = 0;
         long validCnt = 0;
+        float[] DOFS = new float[6];
         for (float gamma1 = para[DOF.gamma1][DataRange.min];
         gamma1 <= para[DOF.gamma1][DataRange.max];
         gamma1 += Mathf.Max(para[DOF.gamma1][DataRange.step], 1e-8f))
         {
-            jointManager.SetJointValue(DOF.gamma1, gamma1);
+            DOFS[0] = gamma1;
 
             for (float gamma2 = para[DOF.gamma2][DataRange.min];
             gamma2 <= para[DOF.gamma2][DataRange.max];
             gamma2 += Mathf.Max(para[DOF.gamma2][DataRange.step], 1e-8f))
             {
-                jointManager.SetJointValue(DOF.gamma2, gamma2);
+                DOFS[1] = gamma2;
 
                 for (float gamma3 = para[DOF.gamma3][DataRange.min];
                 gamma3 <= para[DOF.gamma3][DataRange.max];
                 gamma3 += Mathf.Max(para[DOF.gamma3][DataRange.step], 1e-8f))
                 {
-                    jointManager.SetJointValue(DOF.gamma3, gamma3);
+                    DOFS[2] = gamma3;
 
                     for (float alpha1 = para[DOF.alpha1][DataRange.min];
                     alpha1 <= para[DOF.alpha1][DataRange.max];
                     alpha1 += Mathf.Max(para[DOF.alpha1][DataRange.step], 1e-8f))
                     {
-                        jointManager.SetJointValue(DOF.alpha1, alpha1);
+                        DOFS[3] = alpha1;
 
                         for (float alpha2 = para[DOF.alpha2][DataRange.min];
                         alpha2 <= para[DOF.alpha2][DataRange.max];
                         alpha2 += Mathf.Max(para[DOF.alpha2][DataRange.step], 1e-8f))
                         {
-                            jointManager.SetJointValue(DOF.alpha2, alpha2);
+                            DOFS[4] = alpha2;
 
                             for (float beta = para[DOF.beta][DataRange.min];
                             beta <= para[DOF.beta][DataRange.max];
                             beta += Mathf.Max(para[DOF.beta][DataRange.step], 1e-8f))
                             {
-                                jointManager.SetJointValue(DOF.beta, beta);
+                                DOFS[5] = beta;
+
+                                // Check current para, set the joint value
+                                Processing = true;
+                                jointManager.SetJointsValues(DOFS);
+
+                                // After set the joint, need use yield return here, 
+                                // otherwise the joints won't be updated in Unity
+                                yield return new WaitWhile(() => Processing);
 
                                 currentCnt++;
                                 datasetPanel.UpdateCurrentSampleCnt(currentCnt);
-
-                                // yield return new WaitForSeconds(0.05f);
                                 yield return null;
 
                                 // If could save, save image here
                                 if (IsValid)
                                 {
                                     validCnt++;
-                                    SaveStreamDataToDisk();
+                                    yield return StartCoroutine(SaveStreamDataToDisk());
                                 }
                             }
                         }

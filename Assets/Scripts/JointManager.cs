@@ -92,9 +92,23 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
                 default:
                     break;
             }
-            UpdateJointObjTransform();
-            OnJointUpdate?.Invoke(this, null);
+            StartCoroutine(UpdateJointObjTransformAsync());
         }
+    }
+
+    public void SetJointsValues(float[] values)
+    {
+        if(values.Length != 6)
+            return;
+
+        gamma1 = values[0];
+        gamma2 = values[1];
+        gamma3 = values[2];
+        alpha1 = values[3];
+        alpha2 = values[4];
+        beta   = values[5];
+
+        StartCoroutine(UpdateJointObjTransformAsync());
     }
 
     public event EventHandler OnJointUpdate;
@@ -131,7 +145,6 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
         if (controlInEditor)
         {
             UpdateJointObjTransform();
-            OnJointUpdate?.Invoke(this, null);
         }
     }
 
@@ -146,5 +159,25 @@ public class JointManager : Singleton<JointManager>, IJointMangerAction
 
         thumbJoints[0].localEulerAngles = defaultAngles[thumbJoints[0]] + new Vector3(0, alpha1, beta);
         thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
+
+        OnJointUpdate?.Invoke(this, null);
+    }
+
+    IEnumerator UpdateJointObjTransformAsync()
+    {
+        float[] gama = new float[3] { gamma1, gamma2, gamma3 };
+
+        for (int index = 0; index < 3; index++)
+        {
+            indexFingerJoints[index].localEulerAngles = defaultAngles[indexFingerJoints[index]] + new Vector3(0, gama[index], 0);
+        }
+
+        thumbJoints[0].localEulerAngles = defaultAngles[thumbJoints[0]] + new Vector3(0, alpha1, beta);
+        thumbJoints[1].localEulerAngles = defaultAngles[thumbJoints[1]] + new Vector3(0, alpha2, 0);
+
+        // need some time here for joints object to update in Unity
+        yield return new WaitForFixedUpdate();
+
+        OnJointUpdate?.Invoke(this, null);
     }
 }

@@ -12,27 +12,33 @@ public abstract class DatasetGeneratorBase : MonoBehaviour, IDatasetGeneratorAct
     public string FolderName { get; set; }
     public string CSVFileName { get; set; }
 
-    protected bool IsValid => finger.IsTouching && !finger.IsOverlapped;
-    protected IFingerAction finger;
     protected IJointMangerAction jointManager;
     protected IPanelAction datasetPanel;
     protected IStreamGeneratorAction streamDataGenerator;
     protected StreamWriter commonWriter;
+    protected bool Processing { get; set; }
+    protected bool IsValid { get; set; }
 
     // Start is called before the first frame update
     public virtual void Initialize(IStreamGeneratorAction streamDataGenerator,
                                     IJointMangerAction jointManager,
+                                    ITouchManagerAction touchManager,
                                     IPanelAction datasetPanel,
-                                    IFingerAction finger,
                                     string folderName,
                                     string csvFileName)
     {
         this.streamDataGenerator = streamDataGenerator;
         this.jointManager = jointManager;
         this.datasetPanel = datasetPanel;
-        this.finger = finger;
         this.FolderName = folderName;
         this.CSVFileName = csvFileName;
+
+        // Subscribe the event of touch manager
+        touchManager.OnTouchCalcFinish += (sender, e) =>
+        {
+            IsValid = e;
+            Processing = false;
+        };
     }
 
     public abstract void StartGeneratingDataset();
@@ -88,10 +94,12 @@ public abstract class DatasetGeneratorBase : MonoBehaviour, IDatasetGeneratorAct
     string _data = null;
     string _imgName = null;
     byte[] _image = null;
-    public virtual void SaveStreamDataToDisk()
+    public virtual IEnumerator SaveStreamDataToDisk()
     {
         if (commonWriter == null)
-            return;
+            yield break;
+
+        yield return new WaitForEndOfFrame();
 
         streamDataGenerator.GenerateStreamFileData(
                 out _data, out _imgName, out _image);

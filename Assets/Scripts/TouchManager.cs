@@ -4,19 +4,21 @@ using UnityEngine;
 using Common;
 using System;
 
-public class TouchManager : MonoBehaviour
-{
+public class TouchManager : MonoBehaviour, ITouchManagerAction
+{ 
     TouchDetectionBase thumb;
     TouchDetectionBase indexFinger;
-    IJointMangerAction jointManager;
+
+    public event EventHandler<bool> OnTouchCalcFinish;
 
     void Start()
     {
         thumb = ScriptFind.FindTouchDetection(Finger.thumb);
         indexFinger = ScriptFind.FindTouchDetection(Finger.index);
+
         // Subscribe the joint update event
-        jointManager = JointManager.Instance;
-        jointManager.OnJointUpdate += DetectTouchingStatus;
+        JointManager.Instance.OnJointUpdate += 
+            (sender, e) => StartCoroutine(DetectTouchingStatus());
 
         StartCoroutine(Initialize());
     }
@@ -24,7 +26,7 @@ public class TouchManager : MonoBehaviour
     IEnumerator Initialize()
     {
         yield return new WaitForSeconds(0.5f);
-        DetectTouchingStatus(this, null);
+        StartCoroutine(DetectTouchingStatus());
     }
 
     // Ray hit colliders
@@ -35,7 +37,7 @@ public class TouchManager : MonoBehaviour
     /// <summary>
     /// Detect whether this finger is colliding with the other collider
     /// </summary>
-    void DetectTouchingStatus(object sender, EventArgs e)
+    IEnumerator DetectTouchingStatus()
     {
         _isTouching = IsIntersect(
             indexFinger.m_Collider.ClosestPoint(thumb.m_Collider.bounds.center),
@@ -44,7 +46,8 @@ public class TouchManager : MonoBehaviour
         // Detect touching and overlapped
         if (_isTouching)
         {
-            _isOverlapped = DetectOverlapStatus();
+            // Need some time here
+            yield return StartCoroutine(DetectOverlapStatus());
         }
         else
         {
@@ -61,6 +64,8 @@ public class TouchManager : MonoBehaviour
             thumb.CalcTouchPosition();
             indexFinger.CalcTouchPosition();
         }
+
+        OnTouchCalcFinish?.Invoke(this, IsValid);
     }
 
     bool IsIntersect(Vector3 pos, Collider coll)
@@ -74,19 +79,23 @@ public class TouchManager : MonoBehaviour
         return false;
     }
 
-    bool DetectOverlapStatus()
+    IEnumerator DetectOverlapStatus()
     {
         if(IsIntersect(indexFinger.m_Collider.bounds.center, thumb.m_Collider) ||
            IsIntersect(thumb.m_Collider.bounds.center, indexFinger.m_Collider))
            {
-               return true;
+                _isOverlapped = true;
+               yield break;
            }
 
         // Check the dot obj's relative position
         thumb.UpdateTouchDotObj();
         indexFinger.UpdateTouchDotObj();
 
-        return Vector3.Distance(
+        // need wait some time here to update in Unity
+        yield return new WaitForFixedUpdate();
+
+        _isOverlapped = Vector3.Distance(
                 thumb.touchPointObj.position,
                 indexFinger.touchPointObj.position) > 1e-3;
     }

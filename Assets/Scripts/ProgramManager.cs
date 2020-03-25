@@ -66,6 +66,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
 
     // Pass to dataset generator
     IJointMangerAction jointManager;
+    ITouchManagerAction touchManger;
     IPanelAction iteratedPanelScript;
     IPanelAction searchPanelScript;
     DatasetGeneratorBase datasetGenerator;
@@ -87,6 +88,7 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         CSVFileName = "data.csv";
 
         jointManager = JointManager.Instance;
+        touchManger = transform.GetComponent<TouchManager>();
         iteratedPanelScript = iteratedPanelObj.GetComponent<IteratedPanel>();
         searchPanelScript = searchPanelObj.GetComponent<SearchPanel>();
 
@@ -191,8 +193,8 @@ public class ProgramManager : Singleton<ProgramManager>, IDatasetGeneratorAction
         datasetGenerator?.Initialize(
                                     streamDataGenerator,
                                     jointManager,
+                                    touchManger,
                                     activePanelScript,
-                                    thumb,
                                     FolderName,
                                     CSVFileName);
         StartGeneratingDataset();

@@ -50,27 +50,27 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
             _closedList.Add(ConvertString(_para));
 
             // Check current para, set the joint value
-            for (int i = 0; i < _para.Length; i++)
-            {
-                yield return null;
-                jointManager.SetJointValue((DOF)i, _para[i]);
-            }
+            Processing = true;
+            jointManager.SetJointsValues(_para);
+
+            // After set the joint, need use yield return here, 
+            // otherwise the joints won't be updated in Unity
+            yield return new WaitWhile(() => Processing);
 
             if (IsValid)
             {
-                // If valid, Save this data
+                // If valid, update frame
                 _validCnt++;
                 datasetPanel.UpdateCurrentSampleCnt(_validCnt);
 
-                SaveStreamDataToDisk();
+                // Save data to disk
+                yield return StartCoroutine(SaveStreamDataToDisk());
 
                 // Generate next values and add to open list
                 // Iterate 12 next steps.
                 // If they are not in the closed list, add it to open list
                 for (int i = 0; i < _para.Length; i++)
                 {
-                    yield return null;
-
                     _para[i] += _stepLength;
                     _checkPattern = ConvertString(_para);
                     if (InBoundary(i, _para[i]) &&
@@ -80,8 +80,6 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
                         _openList.Enqueue(_checkPattern);
                     }
                     _para[i] -= _stepLength;
-
-                    yield return null;
 
                     _para[i] -= _stepLength;
                     _checkPattern = ConvertString(_para);
@@ -93,7 +91,6 @@ public class SearchDatasetGenerator : DatasetGeneratorBase
                     }
                     _para[i] += _stepLength;
                 }
-                yield return null;
             }
         }
 
