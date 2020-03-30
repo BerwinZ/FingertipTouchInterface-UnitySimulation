@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="StreamDataGenerator" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="7.25" Width="2" />
+    <AssociationLine Name="jointManager" Type="Common.IJointMangerAction">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.105" Y="0.228" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="thumb" Type="Common.IFingerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.5" Y="7.625" />
+        <Point X="16.5" Y="7.625" />
+        <Point X="16.5" Y="6.074" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.454" Y="1.607" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="indexFinger" Type="Common.IFingerAction" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.5" Y="7.375" />
+        <Point X="16.094" Y="7.375" />
+        <Point X="16.094" Y="6.074" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.984" Y="1.033" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>gAIABBAAAQAAAAAAAAIAAIAIAAAAAAgACCAAAgBABAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\StreamDataGenerator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="jointManager" />
+      <Field Name="thumb" />
+      <Field Name="indexFinger" />
+    </ShowAsAssociation>
+    <Lollipop Orientation="Left" Position="0.1" />
+  </Class>
+  <Class Name="DrawBoard" Collapsed="true">
+    <Position X="15" Y="2" Width="1.5" />
+    <AssociationLine Name="thumb" Type="Common.IFingerAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="15.75" Y="2.691" />
+        <Point X="15.75" Y="2.999" />
+        <Point X="15.938" Y="2.999" />
+        <Point X="15.938" Y="3.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.06" Y="0.618" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAiMAIAAACAgAAIAAAAAAEAAAAAAAggAhAAQ=</HashCode>
+      <FileName>Assets\Scripts\DrawBoard.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="thumb" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="JointManager" Collapsed="true">
+    <Position X="9.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAAQACAAAIACSAgBRAAAAAAAAAAAAIAQAQgAAAA=</HashCode>
+      <FileName>Assets\Scripts\JointManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Bottom" Position="0.461" />
+  </Class>
+  <Class Name="ProgramManager" Collapsed="true">
+    <Position X="4" Y="4.75" Width="2.75" />
+    <Members>
+      <Field Name="streamDataGenerator" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>EDQUAAAAVSAAIYCAIEAAgoAAAAAAAAAAkAIBAABAAgA=</HashCode>
+      <FileName>Assets\Scripts\ProgramManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="streamDataGenerator" />
+    </ShowAsAssociation>
+    <Lollipop Orientation="Left" Position="0.398" />
+  </Class>
+  <Class Name="TouchDetection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.5" Y="5.25" Width="1.5" />
+    <InheritanceLine Type="TouchDetectionBase" FixedFromPoint="true">
+      <Path>
+        <Point X="14.25" Y="4.691" />
+        <Point X="14.25" Y="5.25" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>BABAABAEACgAAAAACAAEAIBIAgAgAAAKIAAQAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\TouchDetection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.1" Collapsed="true" />
+  </Class>
+  <Class Name="UIFolderPathIndicator" Collapsed="true">
+    <Position X="1" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAACAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UIFolderPathIndicator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="gameManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="UISliderActions" Collapsed="true">
+    <Position X="7" Y="3.25" Width="1.5" />
+    <AssociationLine Name="jointManager" Type="Common.IJointMangerAction">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.223" Y="-0.3" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="gameManager" Type="Common.IGameAction" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7" Y="3.75" />
+        <Point X="6.625" Y="3.75" />
+        <Point X="6.625" Y="3.764" />
+        <Point X="2.5" Y="3.764" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="1.954" Y="0.139" Height="0.182" Width="1.677" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAASgACAAIAAAAAAAACAAAAAAIAAAEAAAAgAA=</HashCode>
+      <FileName>Assets\Scripts\UISliderActions.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="jointManager" />
+      <Field Name="gameManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="UIToggleActions" Collapsed="true">
+    <Position X="16.75" Y="2" Width="1.5" />
+    <AssociationLine Name="thumb" Type="Common.IFingerAction" FixedToPoint="true">
+      <Path>
+        <Point X="16.875" Y="2.691" />
+        <Point X="16.875" Y="3.75" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.092" Y="0.602" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAECAAAAAAAAAAAIAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\UIToggleActions.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="thumb" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TouchDetectionBase" Collapsed="true">
+    <Position X="13.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAgBAEAKAAAAAACAAACAIAwEIIAABCAAAAAAQAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\TouchDetectionBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Orientation="Right" Position="0.337" />
+  </Class>
+  <Class Name="DatasetGeneratorBase" Collapsed="true">
+    <Position X="2.25" Y="6.75" Width="1.5" />
+    <AssociationLine Name="datasetPanel" Type="Common.IPanelAction" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.75" Y="7.312" />
+        <Point X="7.625" Y="7.312" />
+        <Point X="7.625" Y="9.062" />
+        <Point X="8" Y="9.062" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="streamDataGenerator" Type="Common.IStreamGeneratorAction" FixedFromPoint="true">
+      <Path>
+        <Point X="3.75" Y="6.938" />
+        <Point X="8" Y="6.938" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ABAAAAAABQAAAYBAAAgAAAACAAAAQAAAkAAQEABACgA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\DatasetGeneratorBase.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="jointManager" />
+      <Field Name="datasetPanel" />
+      <Field Name="streamDataGenerator" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SingleDatasetGenerator" Collapsed="true">
+    <Position X="0.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\SingleDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IteratedDatasetGenerator" Collapsed="true">
+    <Position X="2.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\IteratedDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SearchDatasetGenerator" Collapsed="true">
+    <Position X="4.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAICAACBABAAAAAAJACAACgABAAEACBAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\SearchDatasetGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TouchManager" Collapsed="true">
+    <Position X="13" Y="2.75" Width="1.5" />
+    <AssociationLine Name="indexFinger" Type="TouchDetectionBase">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.028" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AIAAAACACSAAEQAAAAgAAIAAAAAAAAAAAAAAgQCAAAA=</HashCode>
+      <FileName>Assets\Scripts\TouchManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="thumb" />
+      <Field Name="indexFinger" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Common.IStreamGeneratorAction">
+    <Position X="8" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.IJointMangerAction">
+    <Position X="10" Y="3.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAIAAAAgAQAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.IFingerAction">
+    <Position X="15.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAIAAAAAAAAAAAAIAAEIIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.IDatasetGeneratorAction">
+    <Position X="0.5" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAgA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.IGameAction">
+    <Position X="0.5" Y="3" Width="2" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAICAAAAAgAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.IPanelAction">
+    <Position X="8" Y="8.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAACAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Common.ITouchManagerAction">
+    <Position X="13" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Common.DOF">
+    <Position X="5.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.Finger">
+    <Position X="7.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.DataRange">
+    <Position X="3.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAQAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\BaseClass\Common.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
