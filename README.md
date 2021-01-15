@@ -2,6 +2,9 @@
 
 This Unity project is used for the simulating the relationship between value of finger joints and the captured images from Raspberry Pi camera attached to the thumb.
 
+This repo is related to the repo [
+2D-Continuous-Thumb-Pinch-and-Sliding-Tracking ](https://github.com/BerwinZ/2D-Continuous-Thumb-Pinch-and-Sliding-Tracking)
+
 ## What could this work
 
 By adjusting the value of 6 DOF, the simulated captured image will be provided and the 2D coordinate of thumb related to the index finger and index finger coordinate related to the thumb.
